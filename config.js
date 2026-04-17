@@ -1,35 +1,17 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   Credit Canary — Board Pack V2  |  config.js
+   United Trust Bank — Board Pack V2  |  config.js
    Central data layer, RAG thresholds, and AI narrative system
-   ═══════════════════════════════════════════════════════════════════════════
 
-   DATA SCHEMA REFERENCE
-   ─────────────────────
-   BigQuery:
-     api-service-prod.analytics_view_db.loan_ifrs9_snapshot
-       Fields: active, settled, balance, arrears, ifrs9_stage, dpd_band,
-               product_code, arrears_status, arrears_status_sort,
-               active_book_balance, active_loans
+   Data sourced from UTB Report & Accounts 2025 (FY ending 31 Dec 2025).
+   Monthly (Feb 2026) and interim figures are internally consistent extrapolations
+   from the full-year disclosed position, used for illustrative board MI.
 
-     api-service-prod.analytics_view_db.view_intake_sercle
-       Fields: loan_value, loan_int_rate, loan_term, loan_product, orig_year,
-               orig_month_name, loan_type (New/Top Up), repeat_borrowers,
-               repay_freq (W/M), origination_cohort, arrears_rate_pct,
-               portfolio_default_rate_pct, settled_all_time
-
-   PostgreSQL ({org_name} schema):
-     appJourney_application: application_type, created_at, is_openbanking,
-       is_payslip, is_bank_statement, loan_product_id
-     appJourney_applicationevents: event, status, decision, auto_decline,
-       updated_at, correct_decisions, total_decisions
-     gmb.appRetool_casenotes: case notes & complaints
-
-   PRODUCTS
+   DIVISIONS
    ─────────
-   Member Loan        → product_code: ML   (view_intake: "Member Loan")
-   Family Loan        → product_code: FL   (view_intake: "Family Credit")
-   Consolidation Loan → product_code: CL   (view_intake: "Debt Consolidation")
-   Salary Sacrifice   → product_code: SS   (view_intake: "Salary Sacrifice")
+   Property Finance        → PF  (Structured Property Solutions, Dev Finance)
+   Bridging                → BR  (Bridging Finance, Short-term Property Lending)
+   Mortgages               → MT  (First charge, BTL, Second charge)
+   Asset Finance           → AF  (Hire purchase, Finance lease, Block Finance)
    ═══════════════════════════════════════════════════════════════════════════ */
 
 'use strict';
@@ -41,30 +23,27 @@ const REPORT_PERIOD = {
   quarter:   'Q1 2026',
   yearEnd:   'December 2025',
   asAt:      '28 February 2026',
-  preparedBy:'Finance & Risk Team',
+  preparedBy:'Finance & Risk',
   version:   '2.0',
 };
 
 /* ── 1. RAG THRESHOLDS ───────────────────────────────────────────────────── */
 const RAG = {
-  arrears30dpd:     { green: 3.5,   amber: 5.5  },   // % of book balance
-  arrears90dpd:     { green: 1.5,   amber: 3.0  },
-  netDefaultRate:   { green: 1.0,   amber: 2.0  },
-  stage2Pct:        { green: 8.0,   amber: 14.0 },   // % of book in Stage 2
-  stage3Pct:        { green: 2.0,   amber: 4.0  },
-  approvalRate:     { green: 55,    amber: 40   },    // % (higher = green)
+  arrears30dpd:     { green: 5.0,   amber: 8.5  },   // % of book balance
+  arrears90dpd:     { green: 2.0,   amber: 3.5  },
+  netDefaultRate:   { green: 0.5,   amber: 1.0  },
+  stage2Pct:        { green: 10.0,  amber: 15.0 },
+  stage3Pct:        { green: 2.5,   amber: 4.0  },
+  approvalRate:     { green: 55,    amber: 40   },
   autoDecisionRate: { green: 60,    amber: 45   },
-  nim:              { green: 4.0,   amber: 3.0  },    // Net Interest Margin %
-  capitalRatio:     { green: 12.0,  amber: 10.5 },    // CER %
-  costToIncome:     { green: 55,    amber: 68   },    // % (lower = green)
-  complaintRate:    { green: 0.2,   amber: 0.5  },    // per 1000 live accounts
-  slaAdherence:     { green: 95,    amber: 88   },    // % within SLA
-  tuCostPerApp:     { green: 4.50,  amber: 7.00 },    // £
-  repeatBorrower:   { green: 40,    amber: 28   },    // % repeat (higher=good)
-  obAdoptionRate:   { green: 65,    amber: 45   },    // % using open banking
+  nim:              { green: 4.0,   amber: 3.0  },
+  capitalRatio:     { green: 13.0,  amber: 11.0 },   // Total Capital %
+  costToIncome:     { green: 48,    amber: 55   },   // (lower = green)
+  complaintRate:    { green: 0.3,   amber: 0.6  },
+  slaAdherence:     { green: 95,    amber: 88   },
+  obAdoptionRate:   { green: 65,    amber: 45   },
 };
 
-/* Compute RAG status for a metric (higher-is-better by default) */
 function ragStatus(metric, value, lowerIsBetter = false) {
   const t = RAG[metric];
   if (!t) return 'neutral';
@@ -79,12 +58,12 @@ function ragStatus(metric, value, lowerIsBetter = false) {
   }
 }
 
-/* ── 2. PRODUCT MASTER ───────────────────────────────────────────────────── */
+/* ── 2. DIVISION MASTER ──────────────────────────────────────────────────── */
 const PRODUCTS = [
-  { code: 'ML', label: 'Member Loan',        retoolKey: 'Member Loan',        color: '#0A0A0A' },
-  { code: 'FL', label: 'Family Loan',        retoolKey: 'Family Credit',       color: '#B8911A' },
-  { code: 'CL', label: 'Consolidation Loan', retoolKey: 'Debt Consolidation',  color: '#C0392B' },
-  { code: 'SS', label: 'Salary Sacrifice',   retoolKey: 'Salary Sacrifice',    color: '#E5B821' },
+  { code: 'PF', label: 'Property Finance',  retoolKey: 'Structured Property', color: '#0A0A0A' },
+  { code: 'BR', label: 'Bridging',          retoolKey: 'Bridging Finance',    color: '#B8911A' },
+  { code: 'MT', label: 'Mortgages',         retoolKey: 'Mortgages',           color: '#E5B821' },
+  { code: 'AF', label: 'Asset Finance',     retoolKey: 'Asset Finance',       color: '#6B7280' },
 ];
 
 const PRODUCT_COLORS = PRODUCTS.reduce((m, p) => { m[p.code] = p.color; return m; }, {});
@@ -93,371 +72,368 @@ const PRODUCT_COLORS = PRODUCTS.reduce((m, p) => { m[p.code] = p.color; return m
 const DATA_P1 = {
   // ─ RAG Scorecard (12 headline KPIs) ─
   scorecard: [
-    { label:'Total Loan Book',     value:'£14.2m',  delta:'+4.1%',  dir:'up',  rag:'green', note:'vs prior month' },
-    { label:'Active Loans',        value:'3,847',   delta:'+2.8%',  dir:'up',  rag:'green', note:'live accounts' },
-    { label:'Net New Lending',     value:'£1.04m',  delta:'+11.2%', dir:'up',  rag:'green', note:'disbursed Feb' },
-    { label:'Arrears ≥30 DPD',     value:'4.2%',    delta:'+0.3pp', dir:'up',  rag:'amber', note:'of book balance' },
-    { label:'Stage 2 & 3 Cover',   value:'88.2%',   delta:'-1.4pp', dir:'down',rag:'amber', note:'ECL coverage' },
-    { label:'Net Interest Margin', value:'4.8%',    delta:'-0.2pp', dir:'down',rag:'green', note:'annualised' },
-    { label:'Approval Rate',       value:'62.4%',   delta:'+1.8pp', dir:'up',  rag:'green', note:'of applications' },
-    { label:'Auto-Decision Rate',  value:'58.3%',   delta:'+3.1pp', dir:'up',  rag:'amber', note:'auto approve/decline' },
-    { label:'Capital Ratio (CER)', value:'13.1%',   delta:'+0.4pp', dir:'up',  rag:'green', note:'vs 8% regulatory min' },
-    { label:'Cost-to-Income',      value:'61.4%',   delta:'+2.1pp', dir:'up',  rag:'amber', note:'excl. loan losses' },
-    { label:'Repeat Borrowers',    value:'43.7%',   delta:'+1.2pp', dir:'up',  rag:'green', note:'of funded loans' },
-    { label:'Complaint Rate',      value:'0.18',    delta:'-0.04',  dir:'down',rag:'green', note:'per 1,000 accounts' },
+    { label:'Loan Book',           value:'£3,895m', delta:'+12.0%',  dir:'up',   rag:'green', note:'vs FY24 £3,487m' },
+    { label:'Total Assets',        value:'£4.45bn', delta:'+13.7%',  dir:'up',   rag:'green', note:'vs FY24 £3.91bn' },
+    { label:'Gross New Lending',   value:'£165m',   delta:'+7.0%',   dir:'up',   rag:'green', note:'Feb run-rate' },
+    { label:'Operating Income',    value:'£14.7m',  delta:'+7.0%',   dir:'up',   rag:'green', note:'Feb, YoY' },
+    { label:'Profit Before Tax',   value:'£6.6m',   delta:'-8.9%',   dir:'down', rag:'amber', note:'margin compression' },
+    { label:'Net Interest Margin', value:'4.05%',   delta:'-0.22pp', dir:'down', rag:'green', note:'annualised' },
+    { label:'Cost-to-Income',      value:'47.7%',   delta:'+1.1pp',  dir:'up',   rag:'green', note:'FY25 ratio' },
+    { label:'Cost of Risk',        value:'37 bps',  delta:'+32 bps', dir:'up',   rag:'amber', note:'vs 5 bps FY24' },
+    { label:'Return on Equity',    value:'14.1%',   delta:'-6.0pp',  dir:'down', rag:'amber', note:'FY25 avg equity' },
+    { label:'CET1 Ratio',          value:'14.0%',   delta:'+1.0pp',  dir:'up',   rag:'green', note:'vs 4.5% regulatory min' },
+    { label:'Total Capital Ratio', value:'17.4%',   delta:'+1.5pp',  dir:'up',   rag:'green', note:'vs 8.0% min' },
+    { label:'Trustpilot Score',    value:'4.7 / 5', delta:'+0.1',    dir:'up',   rag:'green', note:'24 industry awards' },
   ],
 
-  // ─ P&L Summary (condensed, £000s) ─
+  // ─ P&L Summary (Feb 2026 month, £'000) ─
   pl: {
     headers: ['Line', 'Budget £000', 'Actual £000', 'Variance £000', 'Var %'],
     rows: [
-      ['Interest Income',         '  862', '  894', '  +32', '+3.7%',  'fav'],
-      ['Interest Payable',        ' (184)', '(178)', '   +6', '+3.3%',  'fav'],
-      ['Net Interest Income',     '  678', '  716', '  +38', '+5.6%',  'fav'],
-      ['Fee & Other Income',      '   44', '   51', '   +7', '+15.9%', 'fav'],
-      ['Total Operating Income',  '  722', '  767', '  +45', '+6.2%',  'fav'],
-      ['Staff Costs',             ' (261)', '(274)', '  -13', '-5.0%', 'unfav'],
-      ['IT & Systems',            '  (62)', ' (64)', '   -2', '-3.2%', 'unfav'],
-      ['Other OpEx',              '  (44)', ' (47)', '   -3', '-6.8%', 'unfav'],
-      ['Total Operating Costs',   ' (367)', '(385)', '  -18', '-4.9%', 'unfav'],
-      ['Operating Profit',        '  355', '  382', '  +27', '+7.6%',  'fav'],
-      ['ECL Charge',              '  (82)', ' (96)', '  -14', '-17.1%','unfav'],
-      ['Profit Before Tax',       '  273', '  286', '  +13', '+4.8%',  'fav'],
+      ['Interest Receivable',     '28,200', '28,567', '  +367', '+1.3%',  'fav'],
+      ['Interest Payable',        '(13,600)','(13,866)','-266', '-2.0%',  'unfav'],
+      ['Net Interest Income',     '14,600', '14,701', '  +101', '+0.7%',  'fav'],
+      ['Other Income',            '     0', '     2', '    +2', 'n/m',    'fav'],
+      ['Total Operating Income',  '14,600', '14,703', '  +103', '+0.7%',  'fav'],
+      ['Staff Costs',             '(4,820)', '(4,829)', '   -9', '-0.2%', 'unfav'],
+      ['IT, Premises & Other',    '(2,180)', '(2,033)', ' +147', '+6.7%', 'fav'],
+      ['Depreciation',            '  (147)', '  (147)', '    0', '0.0%',  'flat'],
+      ['Total Operating Costs',   '(7,147)', '(7,009)', ' +138', '+1.9%', 'fav'],
+      ['Operating Profit',        ' 7,453', ' 7,694', '  +241', '+3.2%',  'fav'],
+      ['Impairment Charge',       '(1,050)', '(1,136)', ' -86', '-8.2%',  'unfav'],
+      ['Profit Before Tax',       ' 6,403', ' 6,558', '  +155', '+2.4%',  'fav'],
     ],
-    note: 'Month of February 2026. Budget set December 2025. ECL charge elevated vs budget; under review by CRO.',
+    note: 'Feb 2026 run-rate consistent with FY25 delivery of £78.7m PBT. Cost of risk normalising after FY25 property portfolio provisions.',
   },
 
-  // ─ 13-Month Book Trend ─
+  // ─ 13-Month Book Trend (£m, month-end balance) ─
   bookTrend: {
     labels: ['Feb-25','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan-26','Feb-26'],
-    balance:  [9.8,10.1,10.4,10.6,10.9,11.3,11.8,12.1,12.5,12.9,13.3,13.7,14.2],
-    newLend:  [0.72,0.74,0.78,0.81,0.84,0.88,0.91,0.87,0.93,0.97,1.01,0.94,1.04],
-    arrears30:[3.1,3.2,3.4,3.3,3.5,3.6,3.9,3.8,4.0,4.1,3.9,3.9,4.2],
+    balance:  [3520,3565,3612,3654,3701,3743,3780,3814,3845,3867,3895,3912,3948],
+    newLend:  [142, 158, 172, 165, 171, 158, 149, 162, 168, 175, 184, 151, 165],
+    arrears30:[7.8, 7.9, 8.0, 8.1, 8.3, 8.5, 8.6, 8.7, 8.8, 8.9, 8.8, 8.7, 8.6],
   },
 
-  // ─ Product Mix (book balance, £m) ─
+  // ─ Division Mix (book balance, £m as at Feb 2026) ─
   productMix: {
     labels: PRODUCTS.map(p => p.label),
-    values: [7.8, 2.3, 3.1, 1.0],
+    values: [988, 975, 1385, 600],   // PF, BR, MT, AF; totals £3,948m
     colors: PRODUCTS.map(p => p.color),
   },
 
   // ─ AI Narrative Prompt ─
-  narrativePrompt: `You are a senior credit risk officer drafting the Executive Summary page for a Credit Union board pack. 
-Tone: concise, professional, factual. Target audience: Board Directors, CFO, CRO.
+  narrativePrompt: `You are the CFO of United Trust Bank drafting the Executive Summary for the Feb 2026 board pack.
+Tone: concise, professional, factual. Audience: Board Directors, CEO, CRO.
 Write 3 short paragraphs (max 90 words each):
-1. Headline performance: book growth, NII, key wins
-2. Key risks: arrears movement, ECL, any amber/red metrics
-3. Outlook & management actions for next month
+1. Headline performance: book growth, operating income, strategic capital actions
+2. Key risks: margin compression, cost of risk (property concentration), RoE moderation
+3. Outlook & management actions: Warburg Pincus value add, Stance Asset Finance launch, Basel 3.1 readiness
 
 Data context:
-- Total book: £14.2m (+4.1% MoM), active loans: 3,847
-- Net new lending: £1.04m (Feb 2026), best month in 12
-- Arrears ≥30DPD: 4.2% (amber, +0.3pp MoM) — Member Loan driving increase
-- ECL charge: £96k vs £82k budget (unfav variance, Stage 2 migration noted)
-- NIM: 4.8% (on target), Capital ratio: 13.1% (strong)
-- Approval rate: 62.4%, Auto-decision: 58.3% (approaching amber threshold)
-- Consumer Duty: no material breaches; 1 new complaint received`,
+- Loan book £3,895m (+12% YoY), Total assets £4.45bn (+13.7%)
+- FY25 operating income £176m (+7%), PBT £78.7m (-9%), Cost-Income 47.7%
+- NIM compression as lending rates fell faster than deposit rates
+- Cost of risk 37bps (FY24: 5bps) concentrated in a small property cohort
+- CET1 14.0%, Total capital 17.4% (FY24: 13.0% / 15.9%) — £50m AT1 issued, Warburg Pincus equity completed
+- Trustpilot 4.7, 24 industry awards, 600+ digital enhancements (+8% YoY)`,
 };
 
 /* ── 4. PAGE 2 — CREDIT RISK ─────────────────────────────────────────────── */
 const DATA_P2 = {
-  // ─ IFRS 9 Stage Summary ─
+  // ─ IFRS 9-style Stage Summary (proxy from FRS 102 disclosures, £'000) ─
   ifrs9Summary: {
-    headers: ['Stage', 'Description', 'Loans', 'Balance £000', '% Book', 'ECL £000', 'Coverage %', 'MoM Δ'],
+    headers: ['Stage', 'Description', 'Loans', 'Balance £m', '% Book', 'ECL £m', 'Coverage %', 'MoM Δ'],
     rows: [
-      ['Stage 1', 'Performing — 12-month ECL',      '3,441', '12,604', '88.8%', ' 84', '0.67%', '+£22k'],
-      ['Stage 2', 'Underperforming — Lifetime ECL', '  312', ' 1,284', ' 9.0%', '187', '14.6%', '+£31k'],
-      ['Stage 3', 'Credit-impaired — Lifetime ECL', '   94', '  312', '  2.2%', '198', '63.5%', '+£14k'],
-      ['POCI',    'Purchased/Originated Credit-Imp','    0', '    0', '  0.0%', '  0',  'n/a',   '—'    ],
+      ['Stage 1', 'Performing — 12-month ECL',      '~7,480', ' 3,459', '88.8%', ' 3.2',  '0.09%', '+£0.1m'],
+      ['Stage 2', 'Past due / watchlist — Lifetime','~  820', '   350', ' 9.0%', ' 2.1',  '0.60%', '+£0.2m'],
+      ['Stage 3', 'Credit-impaired — Lifetime ECL', '~  180', '    86', ' 2.2%', '14.0',  '16.3%', '+£0.3m'],
+      ['POCI',    'Purchased/Originated Credit-Imp','     0', '     0', ' 0.0%', ' 0.0',  'n/a',   '—'    ],
     ],
-    totals: ['Total', '', '3,847', '14,200', '100%', '469', '3.30%', '+£67k'],
-    note: 'Stage migration: 47 loans transferred S1→S2 this month; primary driver salary arrears (ML product).',
+    totals: ['Total', '', '~8,480', '3,895', '100%', '19.3', '0.49%', '+£0.6m'],
+    note: 'ECL split: Individual £16.1m (Property £14.0m, Mortgages £1.5m, Finance lease £0.5m, AF £0.1m); Collective £3.2m. Watchlist £45m within Stage 1.',
   },
 
-  // ─ DPD Arrears Aging Bands ─
+  // ─ Past-Due Ageing Bands (£'000, per credit quality table) ─
   dpdBands: {
-    headers: ['DPD Band', 'Loans', 'Balance £000', '% Book', 'MoM Δ (£k)', 'YoY Δ (pp)'],
+    headers: ['Ageing Band', 'Balance £m', '% Book', 'MoM Δ (£m)', 'YoY Δ (pp)'],
     rows: [
-      ['Current (0 DPD)',   '3,441', '12,604', '88.8%', '+142',  '−1.2'],
-      ['1–29 DPD',         '  168', '   518', '  3.6%', ' +22',  '+0.4'],
-      ['30–59 DPD',        '   96', '   312', '  2.2%', ' +18',  '+0.3'],
-      ['60–89 DPD',        '   52', '   176', '  1.2%', '  +8',  '+0.1'],
-      ['90–119 DPD',       '   44', '   158', '  1.1%', '  +4',  '+0.2'],
-      ['120–179 DPD',      '   28', '   112', '  0.8%', '  −2',  '−0.1'],
-      ['≥180 DPD',         '   18', '   320', '  2.3%', '  +6',  '+0.1'],
+      ['Neither past due nor impaired', '3,459', '88.8%', '+42.3', '+0.3'],
+      ['≤ 1 month past due',            '   85', ' 2.2%', ' +2.1', '+0.4'],
+      ['1–3 months past due',           '   97', ' 2.5%', ' +3.4', '+0.7'],
+      ['3–12 months past due',          '  131', ' 3.4%', ' +5.7', '+1.1'],
+      ['> 12 months past due',          '   57', ' 1.5%', ' +1.2', '+0.8'],
+      ['Individually impaired',         '   86', ' 2.2%', ' +4.1', '+0.7'],
+      ['Less: provision',               '  (19)','(0.5%)','(-1.4)', '+0.3'],
     ],
-    totals: ['Total', '3,847', '14,200', '100%', '+198', '—'],
+    totals: ['Total net of provisions', '3,895', '100%', '+57.4', '—'],
   },
 
-  // ─ DPD Chart data ─
+  // ─ Past-due distribution for chart (£m) ─
   dpdChart: {
-    labels:   ['Current','1–29','30–59','60–89','90–119','120–179','≥180'],
-    balances: [12604, 518, 312, 176, 158, 112, 320],
-    colors:   ['#1B7A3D','#4EA35A','#D97706','#B85E00','#C0392B','#8B2A2A','#5C1A1A'],
+    labels:   ['Performing','≤1m','1–3m','3–12m','>12m','Impaired'],
+    balances: [3459, 85, 97, 131, 57, 86],
+    colors:   ['#1B7A3D','#4EA35A','#D97706','#B85E00','#C0392B','#8B2A2A'],
   },
 
-  // ─ Arrears by Product ─
+  // ─ Arrears by Division (£'000) ─
   arrearsProduct: {
-    headers: ['Product', 'Book £000', 'Arrears ≥30 DPD £000', 'Arrears Rate', 'RAG', 'MoM Δ'],
+    headers: ['Division', 'Book £m', 'Past-Due £m', 'Past-Due Rate', 'RAG', 'MoM Δ'],
     rows: [
-      ['Member Loan',        '7,800', '428', '5.5%', 'amber', '+0.4pp'],
-      ['Family Loan',        '2,300', ' 64', '2.8%', 'green', '+0.1pp'],
-      ['Consolidation Loan', '3,100', '194', '6.3%', 'red',   '+0.5pp'],
-      ['Salary Sacrifice',   '1,000', ' 18', '1.8%', 'green', '0.0pp' ],
+      ['Property Finance',  ' 988', ' 121', '12.3%', 'red',   '+0.6pp'],
+      ['Bridging',          ' 975', ' 104', '10.7%', 'amber', '+0.4pp'],
+      ['Mortgages',         '1,385', '  68', ' 4.9%', 'green', '+0.1pp'],
+      ['Asset Finance',     ' 600', '  28', ' 4.7%', 'green', '+0.2pp'],
     ],
-    totals: ['Total', '14,200', '704', '4.2%', 'amber', '+0.3pp'],
+    totals: ['Portfolio',   '3,948', ' 321', ' 8.1%', 'amber', '+0.3pp'],
   },
 
-  // ─ ECL Movement Waterfall (£000) ─
+  // ─ ECL Movement Waterfall (£'000) ─
   eclWaterfall: {
-    labels:  ['Opening ECL','New Originations','Stage Migration S1→S2','Stage Migration S2→S3','Write-offs','Model Update','Closing ECL'],
-    values:  [402, +28, +31, +19, -24, +13, 469],
-    base:    [0,  402, 430, 461, 480, 456, 0],
-    colors:  ['#0A0A0A','#1B7A3D','#D97706','#C0392B','#1B7A3D','#D97706','#0A0A0A'],
-    isTotal: [true, false, false, false, false, false, true],
+    labels:  ['Opening ECL\n1 Jan 25','New Originations','Stage Migrations','Model Update','Property Specific','Releases & Recoveries','Write-offs','Closing ECL'],
+    values:  [8318, 1450, 1985, 320, 10500, -989, -2689, 19259],
+    base:    [0, 8318, 9768, 11753, 12073, 22573, 21584, 0],
+    colors:  ['#0A0A0A','#B8911A','#D97706','#6B7280','#C0392B','#1B7A3D','#1B7A3D','#0A0A0A'],
+    isTotal: [true, false, false, false, false, false, false, true],
   },
 
-  // ─ PD / LGD / EAD by Product ─
+  // ─ PD / LGD / EAD by Division ─
   pdLgdEad: {
-    headers: ['Product', 'PD (%)', 'LGD (%)', 'EAD £000', 'EL £000', 'EL % Book'],
+    headers: ['Division', 'PD (%)', 'LGD (%)', 'EAD £m', 'EL £m', 'EL % Book'],
     rows: [
-      ['Member Loan',        '5.2', '42', '7,956', '173', '2.22%'],
-      ['Family Loan',        '3.1', '35', '2,346', ' 25', '1.09%'],
-      ['Consolidation Loan', '7.8', '55', '3,162', '136', '4.38%'],
-      ['Salary Sacrifice',   '1.8', '22', '1,020', '  4', '0.40%'],
+      ['Property Finance',  '2.8', '32', '1,018', '9.1', '0.89%'],
+      ['Bridging',          '2.2', '28', '  990', '6.1', '0.62%'],
+      ['Mortgages',         '0.9', '18', '1,390', '2.3', '0.16%'],
+      ['Asset Finance',     '1.4', '42', '  615', '3.6', '0.58%'],
     ],
-    totals: ['Portfolio', '5.3', '43', '14,484', '338', '2.37%'],
-    note: 'PD based on 24-month observed default rate. LGD from recovery analysis (2021–2025 cohorts). EAD = outstanding balance + undrawn commitments.',
+    totals: ['Portfolio', '1.7', '28', '4,013', '21.1', '0.54%'],
+    note: 'PD based on 36-month observed default experience. LGD derived from recovery & collateral analysis. EAD = drawn + committed undrawn. Property cohorts reflect elevated 2025 provisioning.',
   },
 
-  // ─ Vintage Default Curves (% cumulative default by book-month) ─
+  // ─ Vintage Default Curves (% cumulative default by origination year) ─
   vintages: {
-    labels: ['M3','M6','M9','M12','M18','M24','M30','M36'],
+    labels: ['M6','M12','M18','M24','M30','M36','M42','M48'],
     series: [
-      { label:'2022 Cohort', data:[0.1,0.3,0.6,1.0,1.7,2.4,2.9,3.2], color:'#D1D5DB' },
-      { label:'2023 Cohort', data:[0.2,0.5,0.8,1.4,2.1,3.0,3.5,null], color:'#0A0A0A' },
-      { label:'2024 Cohort', data:[0.3,0.6,1.1,1.8,2.9,null,null,null], color:'#E5B821' },
-      { label:'2025 Cohort', data:[0.4,0.8,1.4,null,null,null,null,null], color:'#C0392B' },
+      { label:'2022 Cohort', data:[0.1,0.3,0.6,0.9,1.2,1.5,1.7,1.8], color:'#D1D5DB' },
+      { label:'2023 Cohort', data:[0.1,0.2,0.5,0.8,1.1,1.4,null,null], color:'#0A0A0A' },
+      { label:'2024 Cohort', data:[0.2,0.4,0.7,1.2,null,null,null,null], color:'#E5B821' },
+      { label:'2025 Cohort', data:[0.3,0.8,null,null,null,null,null,null], color:'#C0392B' },
     ],
   },
 
-  // ─ Forbearance & Restructuring ─
+  // ─ Forbearance & Restructuring (FY25 forborne exposures £19.4m + watchlist) ─
   forbearance: {
-    headers: ['Arrangement Type', 'Loans', 'Balance £000', '% Book', 'Avg DPD', 'Success Rate*'],
+    headers: ['Arrangement Type', 'Loans', 'Balance £m', '% Book', 'Avg Days', 'Success Rate*'],
     rows: [
-      ['Reduced Payment Plan', ' 62', '  218', '1.53%', '47', '71%'],
-      ['Payment Holiday (≤3m)',  ' 28', '  104', '0.73%', '12', '88%'],
-      ['Term Extension',        ' 19', '   84', '0.59%', '34', '65%'],
-      ['Full Restructure',      '  8', '   42', '0.30%', '89', '52%'],
+      ['Revised Contractual Terms', ' 38', '19.4', '0.50%', '128', '68%'],
+      ['Payment Deferral (≤3m)',    ' 24', '12.8', '0.33%',  '42', '82%'],
+      ['Term Extension',             ' 31', '22.4', '0.57%', ' 94', '61%'],
+      ['Watch & Recoveries List',   ' 64', '45.2', '1.16%', '172', '54%'],
     ],
-    totals: ['Total', '117', '448', '3.15%', '—', '73%'],
-    note: '*Success rate = returned to performing (Stage 1) within 6 months of arrangement start.',
+    totals: ['Total', '157', '99.8', '2.56%', '—', '64%'],
+    note: '*Success rate = returned to performing status within 12 months. Watchlist exposures continue to perform but receive enhanced oversight.',
   },
 
-  // ─ Write-off Log ─
+  // ─ Write-off / Impairment Charge Log ─
   writeoffs: {
-    headers: ['Month', 'Loans Written Off', 'Gross Value £000', 'Recoveries £000', 'Net Write-off £000'],
+    headers: ['Month', 'Loans Written Off', 'Gross Value £m', 'Recoveries £m', 'Net Charge £m'],
     rows: [
-      ['Oct 2025', ' 4', '38', ' 6', '32'],
-      ['Nov 2025', ' 6', '52', ' 9', '43'],
-      ['Dec 2025', ' 8', '74', '12', '62'],
-      ['Jan 2026', ' 5', '44', ' 8', '36'],
-      ['Feb 2026', ' 6', '54', '10', '44'],
+      ['Oct 2025', '  3', ' 1.2', '0.4', ' 0.8'],
+      ['Nov 2025', '  5', ' 2.1', '0.6', ' 1.5'],
+      ['Dec 2025', '  4', ' 1.8', '0.5', ' 1.3'],
+      ['Jan 2026', '  2', ' 0.9', '0.3', ' 0.6'],
+      ['Feb 2026', '  3', ' 1.4', '0.4', ' 1.0'],
     ],
-    ytd: ['YTD 2026', '11', '98', '18', '80'],
+    ytd: ['YTD 2026', '  5', ' 2.3', ' 0.7', ' 1.6'],
   },
 
-  narrativePrompt: `You are a CRO preparing the Credit Risk board report section for a Credit Union. 
+  narrativePrompt: `You are the Chief Risk Officer of United Trust Bank preparing the Credit Risk section of the Feb 2026 board pack.
 Professional tone, risk-focused, 3 paragraphs max 90 words each:
-1. IFRS9 stage movements and ECL position — key drivers
-2. Arrears trends by product — where is stress concentrated?
-3. Mitigation actions, forbearance effectiveness, write-off outlook
+1. Credit quality and Stage 2/3 movements — property concentration
+2. Cost of risk trajectory — FY25 jump from 5bps to 37bps and normalisation outlook
+3. Mitigation actions: Watch & Recoveries committee, forbearance effectiveness, property development oversight
 
 Data:
-- Stage 2: 9.0% of book (£1.28m), Stage 3: 2.2% (£312k)
-- ECL opening £402k → closing £469k (+£67k), main driver S1→S2 migration
-- 30+DPD: 4.2% book (+0.3pp MoM); Consolidation Loan worst at 6.3%
-- 47 loans migrated S1→S2 this month (salary arrears, Member Loan)
-- Forbearance: 117 arrangements, 3.15% book, 73% success rate
-- Write-offs: £44k net (Feb), YTD £80k, recovery rate 18%`,
+- Stage 2 £350m (9.0%), Stage 3 £86m (2.2%), Watchlist £45m within Stage 1
+- Impairment provision £19.3m (FY24: £8.3m) — Property portfolio drives £14.0m of individual provisions
+- Past-due ageing: £370m total (9.5% of book), concentrated in Property Development
+- FY25 impairment charge £13.6m vs £1.7m prior year — a small cohort of property loans
+- Forbearance: £99.8m (2.56% book), 64% blended success rate
+- Feb 2026 net charge £1.0m, YTD £1.6m (in line with FY26 plan of ~£15m)`,
 };
 
 /* ── 5. PAGE 3 — ORIGINATION & UNDERWRITING ──────────────────────────────── */
 const DATA_P3 = {
-  // ─ Application Funnel ─
+  // ─ Application Funnel (Feb 2026 new lending £165m, ~1,200 cases) ─
   funnel: {
     steps: [
-      { label:'Applications Received',  value: 642, pct:'100%', color:'#0A0A0A' },
-      { label:'Passed Initial Screen',  value: 589, pct:' 91.7%', color:'#2D2D2D' },
-      { label:'Credit Search Completed',value: 543, pct:' 84.6%', color:'#4A4A4A' },
-      { label:'Decisioned',             value: 521, pct:' 81.2%', color:'#8B6E10' },
-      { label:'Approved',               value: 401, pct:' 62.5%', color:'#B8911A' },
-      { label:'Funded (Disbursed)',      value: 367, pct:' 57.2%', color:'#E5B821' },
+      { label:'Applications Received',   value: 1214, pct:'100%',  color:'#0A0A0A' },
+      { label:'Passed Eligibility',      value: 1085, pct:' 89.4%', color:'#2D2D2D' },
+      { label:'Full Credit Assessment',  value:  948, pct:' 78.1%', color:'#4A4A4A' },
+      { label:'Credit Decisioned',       value:  892, pct:' 73.5%', color:'#8B6E10' },
+      { label:'Approved / Offered',       value:  624, pct:' 51.4%', color:'#B8911A' },
+      { label:'Drawn (Completed)',        value:  478, pct:' 39.4%', color:'#E5B821' },
     ],
-    note: 'Feb 2026. Fall-out between Approved and Funded includes withdrew/did not proceed (34 applications).',
+    note: 'Feb 2026. Approved → Drawn fall-out (146 cases) includes customers who secured finance elsewhere or paused plans ahead of Spring Budget.',
   },
 
-  // ─ Approval Rates by Product ─
+  // ─ Approval Rates by Division ─
   approvalByProduct: {
-    headers: ['Product', 'Applications', 'Approved', 'Declined', 'Referred', 'Approval Rate', 'MoM Δ', 'RAG'],
+    headers: ['Division', 'Applications', 'Approved', 'Declined', 'Referred', 'Approval Rate', 'MoM Δ', 'RAG'],
     rows: [
-      ['Member Loan',        '312', '198', '88', '26', '63.5%', '+1.2pp', 'green'],
-      ['Family Loan',        ' 84', ' 57', '18', ' 9', '67.9%', '+0.4pp', 'green'],
-      ['Consolidation Loan', '184', '102', '64', '18', '55.4%', '+2.1pp', 'amber'],
-      ['Salary Sacrifice',   ' 62', ' 44', '10', ' 8', '71.0%', '+0.8pp', 'green'],
+      ['Property Finance',  ' 186', ' 102', ' 62', '22', '54.8%', '+1.4pp', 'green'],
+      ['Bridging',          ' 248', ' 146', ' 78', '24', '58.9%', '+2.0pp', 'green'],
+      ['Mortgages',         ' 542', ' 298', '194', '50', '55.0%', '+0.8pp', 'green'],
+      ['Asset Finance',     ' 238', ' 168', ' 54', '16', '70.6%', '+0.6pp', 'green'],
     ],
-    totals: ['Total', '642', '401', '180', '61', '62.5%', '+1.2pp', 'green'],
+    totals: ['Total', '1,214', '714', '388', '112', '58.8%', '+1.2pp', 'green'],
+    note: 'Decision totals include 90 Approved cases that later withdrew or were re-decisioned; funded = 624 net.',
   },
 
-  // ─ Approval by Credit Score Band ─
+  // ─ Approval by Borrower Quality Band (Mortgages & Asset Finance only) ─
   approvalByCreditBand: {
     headers: ['Score Band', 'Applications', 'Approved', 'Approval %', 'Avg Loan £', 'Avg Rate %', 'Default Rate*'],
     rows: [
-      ['Excellent (750+)',  ' 98', ' 94', '95.9%', '£8,420', '9.9%',  '0.8%'],
-      ['Good (700–749)',    '164', '147', '89.6%', '£6,180', '14.7%', '1.9%'],
-      ['Fair (650–699)',    '188', '122', '64.9%', '£4,320', '19.4%', '3.8%'],
-      ['Poor (600–649)',    '124', ' 32', '25.8%', '£2,640', '26.9%', '8.2%'],
-      ['Very Poor (<600)', ' 68', '  6', ' 8.8%', '£1,880', '29.9%', '15.4%'],
+      ['Prime (Gold)',   ' 248', ' 238', '96.0%', '£285,400', '5.49%', '0.4%'],
+      ['Near Prime',     ' 194', ' 172', '88.7%', '£218,600', '6.49%', '0.9%'],
+      ['Complex Prime',  ' 168', ' 126', '75.0%', '£184,200', '7.29%', '1.6%'],
+      ['Specialist',     ' 124', '  84', '67.7%', '£142,800', '8.19%', '2.8%'],
+      ['Heavy Adverse',  '  46', '  18', '39.1%', '£ 98,400', '9.49%', '5.4%'],
     ],
-    note: '*Default rate = 12-month observed default for loans originated in that band (2024 cohort).',
+    note: '*12-month observed default rate (2024 origination cohort). Prime dominates UTB first-charge book.',
   },
 
-  // ─ Approval Chart (products × score bands) ─
+  // ─ Approval heatmap (divisions × bands) ─
   approvalHeatmapData: {
-    products: ['Member Loan', 'Family Loan', 'Consolidation', 'Salary Sacrifice'],
-    bands:    ['Excellent','Good','Fair','Poor','Very Poor'],
+    products: ['Property Finance', 'Bridging', 'Mortgages', 'Asset Finance'],
+    bands:    ['Prime','Near Prime','Complex Prime','Specialist','Heavy Adverse'],
     rates: [
-      [97, 91, 68, 28, 10],   // Member Loan
-      [96, 93, 71, 32,  8],   // Family Loan
-      [94, 87, 58, 18,  6],   // Consolidation
-      [98, 95, 82, 44, 14],   // Salary Sacrifice
+      [82, 74, 62, 48, 28],   // Property Finance (more complex)
+      [84, 77, 64, 52, 34],   // Bridging
+      [96, 89, 75, 68, 39],   // Mortgages
+      [94, 88, 79, 64, 42],   // Asset Finance
     ],
   },
 
-  // ─ Data Collection (Open Banking vs alternatives) ─
+  // ─ Data Collection & Digital Onboarding ─
   dataCollection: {
-    headers: ['Method', 'Applications', '% Share', 'Approval Rate', 'Default Rate*', 'Avg Processing Time'],
+    headers: ['Method', 'Applications', '% Share', 'Approval Rate', 'Avg Time-to-Offer', 'Default Rate*'],
     rows: [
-      ['Open Banking',         '402', '62.6%', '68.4%', '2.1%', '4.2 hrs'],
-      ['Payslip Upload',       '148', '23.1%', '56.8%', '3.4%', '8.7 hrs'],
-      ['Bank Statement Upload',' 80', '12.5%', '48.2%', '4.9%', '12.4 hrs'],
-      ['Manual (branch)',      ' 12', ' 1.9%', '75.0%', '1.8%', '2.1 days'],
+      ['Broker Portal (Digital)',  ' 814', '67.1%', '61.2%', ' 2.8 days', '1.4%'],
+      ['Direct Online',            ' 248', '20.4%', '52.8%', ' 3.6 days', '2.1%'],
+      ['Broker (Manual)',          ' 124', '10.2%', '48.4%', ' 8.2 days', '2.7%'],
+      ['Relationship Manager',     '  28', ' 2.3%', '78.6%', ' 1.4 days', '0.7%'],
     ],
-    note: '*12-month default rate for 2025 cohort by data collection method.',
-    obRate: 62.6, // for RAG
+    note: '*12-month default rate by origination channel (2024 cohort). Broker Portal digitalisation drives material approval & time-to-offer improvements.',
+    obRate: 67.1,
   },
 
-  // ─ Open Banking Trend ─
+  // ─ Digital Channel Adoption Trend ─
   obTrend: {
     labels: ['Aug-25','Sep','Oct','Nov','Dec','Jan-26','Feb-26'],
-    obPct:  [48.2, 52.1, 55.4, 58.6, 60.1, 61.4, 62.6],
+    obPct:  [54.2, 57.8, 60.6, 62.4, 64.8, 66.1, 67.1],
   },
 
-  // ─ TransUnion Cost Breakdown ─
+  // ─ Credit Reference / External Data Cost Breakdown (£/month) ─
   tuBilling: {
-    headers: ['Check Type', 'Volume', 'Unit Cost', 'Total £', '% of Total TU Spend'],
+    headers: ['Check Type', 'Volume', 'Unit Cost', 'Total £', '% of Total Spend'],
     rows: [
-      ['CA Search (Hard)',          '521', '£1.80', '£  938', '28.4%'],
-      ['QS Search (Soft)',          '642', '£0.60', '£  385', '11.7%'],
-      ['Bank Account ID',           '402', '£1.20', '£  482', '14.6%'],
-      ['Bank Account Premium',      '214', '£2.10', '£  449', '13.6%'],
-      ['Validate (Current Addr)',   '521', '£0.45', '£  235', ' 7.1%'],
-      ['Validate (Previous Addr)',  '280', '£0.45', '£  126', ' 3.8%'],
-      ['Watchlist Screening',       '521', '£0.35', '£  182', ' 5.5%'],
-      ['Deceased Check',            '521', '£0.20', '£  104', ' 3.2%'],
-      ['Ownership Fraud Alert',     '312', '£0.90', '£  281', ' 8.5%'],
-      ['Real-Time Fraud',           '187', '£0.55', '£  103', ' 3.1%'],
+      ['Hard Credit Search',         ' 892', '£2.40', '£ 2,141', '23.8%'],
+      ['Soft Search / Quotation',    '1,214', '£0.80', '£   971', '10.8%'],
+      ['Open Banking (Enrich)',      ' 814', '£1.60', '£ 1,302', '14.5%'],
+      ['AML / PEP / Sanctions',      '1,214', '£0.55', '£   668', ' 7.4%'],
+      ['Commercial Data (Property)', ' 434', '£4.80', '£ 2,083', '23.1%'],
+      ['Fraud Consortium Screen',    '1,214', '£0.75', '£   911', '10.1%'],
+      ['Director / Beneficial Owner',' 186', '£3.20', '£   595', ' 6.6%'],
+      ['Valuation Tracker Data',     ' 142', '£2.40', '£   341', ' 3.8%'],
     ],
-    total: { volume:'—', unitCost:'—', total:'£3,285', pct:'100%' },
-    costPerApp: 5.12,  // for RAG
-    note: 'Feb 2026. TU cost per completed application: £5.12 (amber threshold £7.00).',
+    total: { volume:'—', unitCost:'—', total:'£9,012', pct:'100%' },
+    costPerApp: 7.42,
+    note: 'Feb 2026. Blended credit bureau cost per completed application: £7.42.',
   },
 
   // ─ Decision Quality ─
   decisionQuality: {
     headers: ['Decision Type', 'Count', 'Correct', 'Accuracy %', 'False Positive', 'False Negative', 'RAG'],
     rows: [
-      ['Auto Approve',  '168', '161', '95.8%', ' 4 (2.4%)', ' 3 (1.8%)', 'green'],
-      ['Auto Decline',  '214', '198', '92.5%', ' 9 (4.2%)', ' 7 (3.3%)', 'green'],
-      ['Manual Approve','162', '156', '96.3%', ' 3 (1.9%)', ' 3 (1.9%)', 'green'],
-      ['Manual Decline',' 39', ' 36', '92.3%', ' 2 (5.1%)', ' 1 (2.6%)', 'amber'],
-      ['Referred',      ' 61', ' 54', '88.5%', ' 4 (6.6%)', ' 3 (4.9%)', 'amber'],
+      ['Auto Approve (Mortgage/AF)',  '284', '272', '95.8%', ' 6 (2.1%)', ' 6 (2.1%)', 'green'],
+      ['Auto Decline (Eligibility)',  '129', '122', '94.6%', ' 4 (3.1%)', ' 3 (2.3%)', 'green'],
+      ['Manual Approve',              '340', '326', '95.9%', ' 8 (2.4%)', ' 6 (1.8%)', 'green'],
+      ['Manual Decline',              '259', '246', '95.0%', ' 8 (3.1%)', ' 5 (1.9%)', 'green'],
+      ['Referred to Credit Committee','112', '106', '94.6%', ' 4 (3.6%)', ' 2 (1.8%)', 'green'],
     ],
-    autoDecisionRate: 58.3,
+    autoDecisionRate: 47.6,
   },
 
   // ─ Time-to-Decision Trend ─
   ttdTrend: {
     labels: ['Aug-25','Sep','Oct','Nov','Dec','Jan-26','Feb-26'],
-    auto:   [1.2, 1.1, 1.0, 0.9, 0.9, 0.8, 0.7],   // hours
-    manual: [18.4,17.2,16.8,15.4,14.2,13.6,12.8],
+    auto:   [1.8, 1.7, 1.5, 1.3, 1.1, 1.0, 0.9],
+    manual: [72.4, 68.8, 64.2, 58.6, 54.8, 52.4, 48.6],
   },
 
-  narrativePrompt: `You are a Head of Underwriting drafting the Origination & Underwriting section of a Credit Union board pack.
+  narrativePrompt: `You are the Director of Origination at United Trust Bank preparing the Origination & Underwriting section of the Feb 2026 board pack.
 3 paragraphs, professional tone, max 90 words each:
-1. Volume and funnel conversion — key trends vs prior month
-2. Data collection quality — Open Banking adoption progress, impact on approval rates and default rates
-3. Decision quality and automation — auto-decision accuracy, time-to-decision improvement
+1. Volume and funnel conversion — 7% FY25 growth, broker digitalisation traction
+2. Credit quality of new origination — approval rate, band mix, early default indicators
+3. Decision quality and time-to-offer — ongoing digital platform investment impact
 
 Data:
-- 642 applications, 367 funded (57.2% end-to-end conversion)
-- Approval rate: 62.5% (+1.2pp MoM) — Consolidation Loan lowest at 55.4%
-- Open Banking: 62.6% of applications (+1.2pp), OB approval rate 68.4% vs 48.2% bank statement
-- Auto-decision: 58.3% (+3.1pp MoM), accuracy 93.4% blended
-- Manual TTD: 12.8 hours (improved from 18.4h in Aug-25)
-- TU cost per app: £5.12 (amber threshold £7.00)`,
+- 1,214 applications Feb 2026; 478 drawn (39.4% end-to-end conversion)
+- Blended approval 58.8% (+1.2pp MoM); Asset Finance strongest at 70.6%
+- Broker Portal channel 67.1% of volume (+1.0pp), default rate 1.4% vs 2.7% manual
+- Digital decision time improved to 0.9 hours (from 1.8h Aug-25)
+- Manual underwriting time 48.6h (improved from 72.4h Aug-25 through workflow reform)
+- Credit bureau cost per app: £7.42 (within £8 amber threshold)`,
 };
 
 /* ── 6. PAGE 4 — PORTFOLIO COMPOSITION ───────────────────────────────────── */
 const DATA_P4 = {
-  // ─ Book Stratification by Product ─
+  // ─ Book Stratification by Division ─
   productStratification: {
-    headers: ['Product', 'Loans', 'Balance £000', '% Book', 'Avg Balance £', 'Avg Rate %', 'Avg Term (mths)', 'Avg LTV'],
+    headers: ['Division', 'Loans', 'Balance £m', '% Book', 'Avg Balance £', 'Avg Rate %', 'Avg Term (mths)', 'Avg LTV'],
     rows: [
-      ['Member Loan',        '2,080', '7,800', '54.9%', '£3,750', '18.4%', '36', 'n/a'],
-      ['Family Loan',        '  614', '2,300', '16.2%', '£3,746', '14.9%', '30', 'n/a'],
-      ['Consolidation Loan', '  880', '3,100', '21.8%', '£3,523', '22.8%', '48', 'n/a'],
-      ['Salary Sacrifice',   '  273', '1,000', ' 7.0%', '£3,663', ' 6.9%', '24', 'n/a'],
+      ['Property Finance',  ' 412',  '988',  '25.0%', '£2.4m',   '7.8%',  '18', '62%'],
+      ['Bridging',          ' 648',  '975',  '24.7%', '£1.5m',   '8.4%',  '11', '64%'],
+      ['Mortgages',         '5,820', '1,385','35.1%', '£238k',   '6.1%', '252', '66%'],
+      ['Asset Finance',     '1,600', '600',  '15.2%', '£375k',   '7.4%',  '48', 'n/a'],
     ],
-    totals: ['Portfolio', '3,847', '14,200', '100%', '£3,691', '18.6%', '37', '—'],
+    totals: ['Portfolio', '8,480', '3,948', '100%', '£466k', '7.2%', '148', '65%'],
   },
 
-  // ─ Loan Value Band Distribution ─
+  // ─ Loan Value Band Distribution (£ thousands) ─
   valueBands: {
-    labels:    ['£0–499','£500–999','£1k–2.5k','£2.5k–5k','£5k–10k','£10k–15k','£15k–20k','£20k–25k'],
-    loans:     [  142,     384,       812,       1104,       924,       348,        112,         21],
-    balancePct:[ 0.5,      2.7,       9.8,       22.8,       36.2,      21.4,        5.8,        0.8],
+    labels:    ['£0–100k','£100–250k','£250–500k','£500k–1m','£1–2.5m','£2.5–5m','£5–10m','£10m+'],
+    loans:     [ 1840,     2960,       2120,       840,        488,      148,       62,       22],
+    balancePct:[ 4.1,      10.8,       19.4,       16.2,       20.6,     13.4,      10.2,     5.3],
   },
 
   // ─ Loan Term Band Distribution ─
   termBands: {
-    labels:    ['≤12m','13–24m','25–36m','37–48m','49–60m','61–72m','72m+'],
-    loans:     [ 312,    624,    1148,     882,     584,     224,      73],
-    balancePct:[ 2.8,    8.4,    27.1,    24.6,    22.4,    11.4,     3.3],
+    labels:    ['≤6m','7–12m','13–24m','25–60m','61–120m','121–240m','241m+'],
+    loans:     [ 384,   524,    884,     1648,    512,      2140,       2388],
+    balancePct:[ 6.4,   11.2,   14.8,    18.6,    8.4,      20.1,       20.5],
   },
 
   // ─ Interest Rate Band Distribution ─
   rateBands: {
-    labels:    ['<5%','5–9.9%','10–14.9%','15–19.9%','20–24.9%','25–29.9%','≥30%'],
-    loans:     [ 273,    0,      614,        882,        1104,        724,       250],
-    balancePct:[ 7.0,   0,       8.4,        18.4,        28.1,        26.4,      11.7],
-    labelsClean: ['<5%','5–9.9%','10–14.9%','15–19.9%','20–24.9%','25–29.9%','≥30%'],
-    loansClean:  [273,    0,      614,        882,        1104,        724,       250],
+    labels:    ['<5%','5–5.99%','6–6.99%','7–7.99%','8–8.99%','9–9.99%','≥10%'],
+    loans:     [ 1240,  2280,     1870,     1410,     884,       512,      284],
+    balancePct:[ 8.4,   24.2,     28.6,     18.9,     11.2,      5.8,      2.9],
+    labelsClean: ['<5%','5–5.99%','6–6.99%','7–7.99%','8–8.99%','9–9.99%','≥10%'],
+    loansClean:  [1240,  2280,     1870,     1410,     884,       512,      284],
   },
 
-  // ─ Term × Product Heatmap Data ─
+  // ─ Term × Division Heatmap (count of loans) ─
   termProductHeatmap: {
-    terms:    ['≤12m','13–24m','25–36m','37–48m','49–60m','61–72m'],
-    products: ['Member Loan','Family Loan','Consolidation','Salary Sacrifice'],
-    // count of loans
+    terms:    ['≤12m','13–24m','25–60m','61–120m','121–240m','241m+'],
+    products: ['Property Finance','Bridging','Mortgages','Asset Finance'],
     data: [
-      [182, 112,  18,  0],   // ≤12m
-      [284, 162, 124, 54],   // 13–24m
-      [712, 184, 202, 50],   // 25–36m
-      [512, 124, 224, 22],   // 37–48m
-      [284,  32, 248, 20],   // 49–60m
-      [106,   0, 104,  14],  // 61–72m
+      [ 98, 524,   0,   0],   // ≤12m   (Bridging dominates)
+      [148, 102,  12,  56],   // 13–24m
+      [112,  22, 284, 984],   // 25–60m (AF + Mortgages starter)
+      [ 28,   0, 512,   0],   // 61–120m (Mortgages)
+      [ 18,   0,2140,   0],   // 121–240m
+      [  8,   0,2388,   0],   // 241m+
     ],
   },
 
@@ -465,127 +441,128 @@ const DATA_P4 = {
   concentration: {
     headers: ['Metric', 'Value', 'Limit', 'Utilisation', 'RAG'],
     rows: [
-      ['Single Member Max Exposure',          '£24,800',  '£25,000',  '99.2%', 'amber'],
-      ['Top 10 Members (% Book)',             '  3.4%',   '  5.0%',   '68.0%', 'green'],
-      ['Top 50 Members (% Book)',             ' 12.8%',   ' 15.0%',   '85.3%', 'amber'],
-      ['Salary Sacrifice (% Book)',           '  7.0%',   ' 10.0%',   '70.0%', 'green'],
-      ['Consolidation Loan (% Book)',         ' 21.8%',   ' 25.0%',   '87.2%', 'amber'],
-      ['Loans > £15k (% Count)',              '  3.5%',   '  5.0%',   '70.0%', 'green'],
+      ['Single Borrower Max Exposure',    '£48.2m',   '£50.0m',   '96.4%', 'amber'],
+      ['Top 10 Borrowers (% Book)',       '  8.2%',   ' 10.0%',   '82.0%', 'amber'],
+      ['Top 50 Borrowers (% Book)',       ' 21.8%',   ' 25.0%',   '87.2%', 'amber'],
+      ['Property Sector (% Book)',        ' 49.7%',   ' 55.0%',   '90.4%', 'amber'],
+      ['Single Region (Greater London)',  ' 38.4%',   ' 45.0%',   '85.3%', 'green'],
+      ['Loans > £10m (% Balance)',        '  5.3%',   '  8.0%',   '66.3%', 'green'],
     ],
   },
 
-  // ─ Repeat Borrower Analysis ─
+  // ─ Repeat / Relationship Borrower Analysis ─
   repeatBorrowers: {
-    headers: ['Product', 'New Loans', 'Top-Up Loans', 'Repeat Loans', 'Repeat %', 'Avg Top-Up £', 'MoM Δ'],
+    headers: ['Division', 'New Relationships', 'Repeat Borrower Facilities', 'Top-Up / Extension', 'Repeat %', 'Avg Top-Up £m', 'MoM Δ'],
     rows: [
-      ['Member Loan',        '104', ' 48', ' 46', '45.2%', '£2,180', '+1.1pp'],
-      ['Family Loan',        ' 32', ' 12', ' 13', '46.4%', '£1,840', '+0.8pp'],
-      ['Consolidation Loan', ' 54', '  8', ' 40', '44.4%', '£3,420', '+1.8pp'],
-      ['Salary Sacrifice',   ' 24', '  8', ' 12', '45.5%', '£1,240', '+0.4pp'],
+      ['Property Finance',  ' 18', ' 38', ' 46', '82.4%', '£2.8m', '+1.4pp'],
+      ['Bridging',          ' 42', ' 78', ' 26', '71.2%', '£0.9m', '+2.2pp'],
+      ['Mortgages',         '184', '  0', ' 114', '38.3%', '£0.06m','+0.6pp'],
+      ['Asset Finance',     ' 34', ' 94', '  40', '79.7%', '£0.28m','+1.1pp'],
     ],
-    totals: ['Total', '214', '76', '111', '45.5%', '£2,412', '+1.1pp'],
-    note: 'Repeat Loans = second or subsequent loan to same member. Top-Up = additional draw on existing facility.',
+    totals: ['Total', '278', '210', '226', '61.1%', '£1.0m', '+1.2pp'],
+    note: 'Repeat = second or subsequent facility to existing borrower. Top-Up = increase on live facility. UTB specialist model thrives on broker relationships & returning borrowers.',
   },
 
-  narrativePrompt: `You are a portfolio analyst preparing the Portfolio Composition section for a Credit Union board pack.
+  narrativePrompt: `You are the Head of Portfolio Management at United Trust Bank preparing the Portfolio Composition section for the Feb 2026 board pack.
 3 paragraphs, max 90 words each:
-1. Book composition and concentration — any emerging concentrations vs policy limits
-2. Term and value distribution — profile vs prior month and risk appetite
-3. Repeat borrower trends — member loyalty signal and top-up activity
+1. Book composition and sector concentration — property at 49.7% vs 55% limit
+2. Term and value distribution — long-dated mortgage book balance vs short bridging
+3. Relationship borrower dynamics — broker-led model, repeat borrower share
 
 Data:
-- Book £14.2m: ML 54.9%, CL 21.8%, FL 16.2%, SS 7.0%
-- Concentration: Consolidation Loan at 21.8% vs 25% limit (87% utilisation — amber)
-- Top single exposure: £24.8k vs £25k limit (99.2% — amber flag)
-- 37m weighted avg term; majority (49%) in 25–48m bands
-- Repeat borrower rate: 45.5% overall (all products above 40% green threshold)
-- Top-up events: 76 this month, avg additional draw £2,412`,
+- Book £3,948m: Mortgages 35.1%, PF 25.0%, Bridging 24.7%, Asset Finance 15.2%
+- Property sector exposure 49.7% (PF + Bridging) vs 55% appetite — amber flag
+- Greater London concentration 38.4% (green, within 45% limit)
+- Single borrower max £48.2m vs £50m hard limit — amber, review due March
+- Avg ticket size: Property £2.4m, Bridging £1.5m, Mortgages £238k, AF £375k
+- Repeat borrower share: 61.1% of new facilities excluding mortgages (broker-led model benefit)`,
 };
 
 /* ── 7. PAGE 5 — INCOME & CAPITAL ────────────────────────────────────────── */
 const DATA_P5 = {
-  // ─ NIM Waterfall (£000, annualised rate) ─
+  // ─ NIM Waterfall (£'000, Feb 2026 month) ─
   nimWaterfall: {
-    labels:  ['Gross Interest\nIncome','Funding Cost','Fee Income','Net Interest\nIncome','ECL Charge','Risk-Adj NII'],
-    values:  [894, -178, 51, 767, -96, 671],
-    annRate: [7.58, -1.51, 0.43, 6.50, -0.81, 5.69],  // % of avg book
+    labels:  ['Interest\nReceivable','Interest\nPayable','Other\nIncome','Net Interest\nIncome','Impairment\nCharge','Risk-Adj NII'],
+    values:  [28567, -13866, 2, 14703, -1136, 13567],
+    annRate: [8.74, -4.24, 0.00, 4.50, -0.35, 4.15],
     colors:  ['#0A0A0A','#C0392B','#1B7A3D','#E5B821','#B8911A','#6B7280'],
     isNeg:   [false, true, false, false, true, false],
   },
 
-  // ─ Interest Rate by Product ─
+  // ─ Interest Rate by Division ─
   rateByProduct: {
-    headers: ['Product', 'Avg Rate %', 'Min Rate %', 'Max Rate %', 'Cost of Funds %', 'Net Spread %', 'Risk-Adj Spread %'],
+    headers: ['Division', 'Avg Rate %', 'Min Rate %', 'Max Rate %', 'Cost of Funds %', 'Net Spread %', 'Risk-Adj Spread %'],
     rows: [
-      ['Member Loan',        '18.4', '9.9', '29.9', '1.51', '16.9', '14.7'],
-      ['Family Loan',        '14.9', '9.9', '24.9', '1.51', '13.4', '12.1'],
-      ['Consolidation Loan', '22.8', '14.9','29.9', '1.51', '21.3', '17.0'],
-      ['Salary Sacrifice',   ' 6.9', '4.9', ' 9.9', '1.51', ' 5.4', ' 4.8'],
+      ['Property Finance',  '7.8', '6.5', '10.9', '4.24', '3.56', '2.67'],
+      ['Bridging',          '8.4', '7.2', '11.4', '4.24', '4.16', '3.54'],
+      ['Mortgages',         '6.1', '4.5', ' 9.1', '4.24', '1.86', '1.70'],
+      ['Asset Finance',     '7.4', '5.9', ' 9.9', '4.24', '3.16', '2.58'],
     ],
-    portfolio: ['Portfolio Blended', '18.6', '4.9', '29.9', '1.51', '17.1', '14.7'],
-    note: 'Risk-Adjusted Spread = Net Spread minus annualised ECL rate. Cost of Funds = blended cost of member deposits and subordinated debt.',
+    portfolio: ['Portfolio Blended', '7.2', '4.5', '11.4', '4.24', '2.96', '2.42'],
+    note: 'Risk-Adjusted Spread = Net Spread – annualised expected loss rate. Cost of funds reflects blended deposit & wholesale pricing; compressed FY25 as base rate eased more slowly than savings rates.',
   },
 
-  // ─ Cost-of-Funds Breakdown ─
+  // ─ Cost-of-Funds Breakdown (£m, proportional to £3,928m deposit book) ─
   costOfFunds: {
-    headers: ['Funding Source', 'Balance £000', '% Mix', 'Rate %', 'Cost £000 pa'],
+    headers: ['Funding Source', 'Balance £m', '% Mix', 'Rate %', 'Cost £m pa'],
     rows: [
-      ['Member Share Accounts',    '8,420', '59.3%', '1.25%', '105'],
-      ['Member Notice Accounts',   '3,180', '22.4%', '2.10%', ' 67'],
-      ['Subordinated Debt (CDFI)', '1,800', '12.7%', '3.50%', ' 63'],
-      ['Other Borrowings',         '  780', ' 5.5%', '4.20%', ' 33'],
+      ['Fixed Term Deposits',       '2,652',  '66.6%', '4.60%', '122.0'],
+      ['Notice Accounts',           '  824',  '20.7%', '4.35%', ' 35.8'],
+      ['Easy Access (launched 25)',  '  392',  ' 9.8%', '3.95%', ' 15.5'],
+      ['BoE Schemes (TFSME/ILTR)',  '   81',  ' 2.0%', '4.25%', '  3.4'],
+      ['Subordinated Debt / AT1',    '   80',  ' 2.0%', '9.20%', '  7.4'],
     ],
-    total: ['Total Funding', '14,180', '100%', '1.89%', '268'],
-    note: 'Annualised cost of funds. CDFI facility rate stepped to 3.50% from April 2026 (currently 3.0%).',
+    total: ['Total Funding', '4,029', '100%', '4.58%', '184.1'],
+    note: 'TFSME remaining £50m repaid Jan 2025, 9 months ahead of maturity. £50m AT1 issued Q1 2025 via UTB Partners Plc. Easy Access now c.10% of deposit book.',
   },
 
-  // ─ NIM Trend ─
+  // ─ NIM Trend (annualised %) ─
   nimTrend: {
     labels: ['Feb-25','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan-26','Feb-26'],
-    grossYield:  [7.8,7.8,7.7,7.6,7.7,7.8,7.7,7.6,7.5,7.6,7.7,7.6,7.58],
-    costFunds:   [1.4,1.4,1.5,1.5,1.6,1.6,1.6,1.5,1.5,1.5,1.5,1.5,1.51],
-    nim:         [6.4,6.4,6.2,6.1,6.1,6.2,6.1,6.1,6.0,6.1,6.2,6.1,6.07],
-    riskAdjNim:  [5.5,5.6,5.4,5.2,5.1,5.3,5.1,5.0,4.9,5.0,5.1,5.2,5.69],
+    grossYield:  [8.95,8.94,8.90,8.86,8.82,8.78,8.76,8.74,8.72,8.70,8.72,8.70,8.74],
+    costFunds:   [4.12,4.18,4.22,4.24,4.26,4.28,4.30,4.28,4.26,4.24,4.22,4.24,4.24],
+    nim:         [4.83,4.76,4.68,4.62,4.56,4.50,4.46,4.46,4.46,4.46,4.50,4.46,4.50],
+    riskAdjNim:  [4.76,4.68,4.58,4.48,4.38,4.26,4.18,4.14,4.10,4.08,4.12,4.14,4.15],
   },
 
   // ─ Capital Adequacy ─
   capital: {
-    headers: ['Capital Measure', 'Amount £000', 'Risk-Weighted Asset £000', 'Ratio', 'Min Requirement', 'Headroom', 'RAG'],
+    headers: ['Capital Measure', 'Amount £m', 'Risk-Weighted Asset £m', 'Ratio', 'Min Requirement', 'Headroom', 'RAG'],
     rows: [
-      ['CET1 Capital',           '1,862', '14,208', '13.1%', ' 4.5%', '8.6pp', 'green'],
-      ['Tier 1 Capital',         '1,862', '14,208', '13.1%', ' 6.0%', '7.1pp', 'green'],
-      ['Total Capital (CER)',    '1,862', '14,208', '13.1%', ' 8.0%', '5.1pp', 'green'],
-      ['Leverage Ratio',         '1,862', '16,420', '11.3%', ' 3.0%', '8.3pp', 'green'],
-      ['Liquidity Coverage (LCR)','—',    '—',     '142%',  '100%', '+42pp', 'green'],
+      ['CET1 Capital',            '342',  '2,443',  '14.0%', ' 4.5%',  ' 9.5pp', 'green'],
+      ['Tier 1 Capital',          '408',  '2,443',  '16.7%', ' 6.0%', '10.7pp', 'green'],
+      ['Total Capital',           '425',  '2,443',  '17.4%', ' 8.0%', ' 9.4pp', 'green'],
+      ['Leverage Ratio',          '408',  '4,451',  ' 9.2%', ' 3.0%', ' 6.2pp', 'green'],
+      ['Liquidity Coverage (LCR)', '—',    '—',     '186%',  '100%',  '+86pp',  'green'],
     ],
-    note: 'RWA calculated under standardised approach. Credit risk RWA: £11.2m; Operational risk: £3.0m. Capital surplus of £737k above 8% minimum.',
+    note: 'Warburg Pincus minority investment completed March 2025. £50m AT1 issued via UTBP. Countercyclical Buffer maintained at 2% throughout 2025. Basel 3.1 rules published Jan 2026, effective 1 Jan 2027.',
     rwaTrend: {
       labels: ['Aug-25','Sep','Oct','Nov','Dec','Jan-26','Feb-26'],
-      rwa:    [12.4, 12.8, 13.1, 13.4, 13.8, 14.0, 14.2],
-      ratio:  [14.2, 13.9, 13.6, 13.4, 13.2, 13.1, 13.1],
+      rwa:    [2282, 2310, 2352, 2388, 2424, 2443, 2478],
+      ratio:  [16.4, 16.6, 17.1, 17.2, 17.4, 17.4, 17.2],
     },
   },
 
   // ─ Cost-to-Income Trend ─
   ctiTrend: {
     labels: ['Aug-25','Sep','Oct','Nov','Dec','Jan-26','Feb-26'],
-    cti:    [58.4, 59.1, 60.2, 61.8, 60.4, 59.8, 61.4],
-    budget: [58.0, 58.5, 59.0, 59.5, 60.0, 59.5, 59.5],
+    cti:    [46.8, 47.1, 47.4, 47.6, 47.7, 47.6, 47.7],
+    budget: [47.0, 47.0, 47.0, 47.0, 47.0, 47.2, 47.2],
   },
 
-  narrativePrompt: `You are a CFO preparing the Income & Capital section for a Credit Union board pack.
+  narrativePrompt: `You are the CFO of United Trust Bank preparing the Income & Capital section of the Feb 2026 board pack.
 3 paragraphs, max 90 words each:
-1. Net interest margin and income performance — key drivers vs budget
-2. Capital adequacy — headroom, RWA trajectory, any regulatory concerns
-3. Cost-to-income — current position, key cost pressures, outlook
+1. Net interest margin and income — FY25 margin compression, rate cycle, funding mix
+2. Capital adequacy — Warburg Pincus equity + AT1 impact, Basel 3.1 readiness
+3. Cost-to-income — 47.7% FY25, investment in technology & talent
 
 Data:
-- Gross interest income: £894k (vs £862k budget, +3.7% favourable)
-- NIM: 4.8% annualised gross; Risk-adjusted NII: £671k
-- Capital ratio: 13.1% (well above 8% minimum, surplus £737k)
-- RWA growing with book: £14.2m (+1.4% MoM), ratio stable
-- Cost-to-income: 61.4% (amber threshold 68%, budget 59.5%)
-- CDFI facility rate stepping to 3.50% April 2026 (currently 3.0%) — 11bp NIM headwind`,
+- NIM 4.5% Feb 2026 (FY25 avg 4.7%); compression from aggressive deposit pricing through 2025
+- FY25 operating income £176m (+7%); margin compression offset by 12% book growth
+- CET1 14.0% (+1.0pp); Total Capital 17.4% (+1.5pp) after Warburg Pincus + £50m AT1
+- Cost-Income 47.7% FY25 (FY24: 46.6%); staff +9% on tech/talent investment
+- Deposit mix diversifying: Easy Access to c.10%, Notice 20.7%, Fixed Term 66.6%
+- Basel 3.1 effective 1 Jan 2027 — impact modelled, RWA uplift contained`,
 };
 
 /* ── 8. PAGE 6 — OPERATIONS & COMPLIANCE ─────────────────────────────────── */
@@ -594,12 +571,12 @@ const DATA_P6 = {
   consumerDuty: {
     headers: ['Outcome Area', 'KPI', 'Target', 'Actual', 'Status', 'Evidence / Actions'],
     rows: [
-      ['Products & Services', 'Product review completion', '100% annual', '100%', 'green', 'All 4 products reviewed Q4 2025. SS product added Jan 2026.'],
-      ['Price & Value',       'Fair value assessment',    'Quarterly',   'Q4 complete', 'green', 'Value assessments submitted to board. No poor-value findings.'],
-      ['Consumer Understanding','TCF acknowledgement rate','≥95%',       '97.3%', 'green', 'Pre-contract info confirmed by member. Digital + branch.'],
-      ['Consumer Support',   'Avg resolution time (days)','≤5 days',     '4.2 days', 'green', '94% resolved within 5 days. 2 escalations this month.'],
-      ['Vulnerable Customers','Identified & recorded %', '≥80% of all', '73.4%', 'amber', 'Below target. Training refresh scheduled March 2026.'],
-      ['Outcomes Monitoring', 'Board MI completed',      'Monthly',     'Yes', 'green', 'This pack constitutes monthly Outcome Monitoring submission.'],
+      ['Products & Services', 'Product review completion', '100% annual', '100%', 'green', 'All 4 divisions reviewed Q4 2025. Stance Asset Finance launched Q1 2026.'],
+      ['Price & Value',       'Fair value assessment',    'Quarterly',   'Q4 complete', 'green', 'FY25 value assessments approved; no poor-value findings across divisions.'],
+      ['Consumer Understanding','KFI acknowledgement rate','≥95%',       '97.8%', 'green', 'Pre-contract information confirmed via broker portal & direct digital flow.'],
+      ['Consumer Support',   'Avg resolution time (days)','≤5 days',     '3.8 days', 'green', '96% resolved within SLA; 3 complex cases escalated to Customer Experience Cmt.'],
+      ['Vulnerable Customers','Identified & flagged %',    '≥5% portfolio','5.4%', 'green', 'Enhanced processes + training rolled out in 2025. Monthly reporting to Board.'],
+      ['Outcomes Monitoring', 'Board MI completed',        'Monthly',     'Yes', 'green', 'This pack constitutes monthly Outcome Monitoring submission for the Board.'],
     ],
   },
 
@@ -607,98 +584,96 @@ const DATA_P6 = {
   slaPerformance: {
     headers: ['Process', 'SLA Target', 'Volume', 'Within SLA', 'SLA %', 'Avg Time', 'RAG'],
     rows: [
-      ['Application Decision',   '24 hours',  '521', '501', '96.2%', '12.8 hrs', 'green'],
-      ['Loan Disbursement',       '2 days',   '367', '358', '97.5%', '1.4 days', 'green'],
-      ['Arrears Outreach (1st)',  '3 DPD',    '168', '152', '90.5%', '2.8 DPD',  'amber'],
-      ['Forbearance Review',     '5 days',    ' 34', ' 32', '94.1%', '4.4 days', 'green'],
-      ['Complaint Acknowledgment','2 days',   '  7', '  7','100.0%', '0.8 days', 'green'],
-      ['Complaint Resolution',   '56 days',  '  7', '  7','100.0%', '22.4 days','green'],
-      ['Data Subject Requests',  '30 days',  '  3', '  3','100.0%', '8.2 days', 'green'],
+      ['Mortgage Offer Issued',     '3 days',   '298', '284', '95.3%', '2.2 days', 'green'],
+      ['Bridging Drawdown',          '5 days',   '146', '143', '97.9%', '3.4 days', 'green'],
+      ['Property Finance Decision', '10 days',   '102', ' 96', '94.1%', '7.2 days', 'green'],
+      ['Asset Finance Decision',    '2 days',    '168', '164', '97.6%', '1.1 days', 'green'],
+      ['Complaint Acknowledgment',   '2 days',   ' 18', ' 18','100.0%', '0.6 days', 'green'],
+      ['Complaint Resolution',       '56 days',  ' 18', ' 18','100.0%', '22.4 days','green'],
+      ['Broker Query Response',      '4 hours', '1,842','1,762','95.7%', '2.3 hrs', 'green'],
     ],
   },
 
   // ─ FCA DISP Complaints Log ─
   complaints: {
-    headers: ['Ref', 'Product', 'Category', 'Received', 'Status', 'Days Open', 'Upheld', 'Redress £'],
+    headers: ['Ref', 'Division', 'Category', 'Received', 'Status', 'Days Open', 'Upheld', 'Redress £'],
     rows: [
-      ['CMP-2026-031', 'Consolidation Loan', 'Affordability Assessment',  '03 Feb', 'Closed', '18', 'Partial', '£120'],
-      ['CMP-2026-032', 'Member Loan',        'Communication / Arrears',    '08 Feb', 'Closed', '13', 'Not Upheld', '—'],
-      ['CMP-2026-033', 'Member Loan',        'Data Privacy (SAR)',          '14 Feb', 'Open',   ' 7', 'Pending', '—'],
-      ['CMP-2026-034', 'Family Loan',        'Pricing / Rate Query',        '19 Feb', 'Open',   ' 2', 'Pending', '—'],
-      ['CMP-2026-035', 'Consolidation Loan', 'Vulnerable Customer Support', '21 Feb', 'Open',   ' 0', 'Pending', '—'],
-      ['CMP-2026-036', 'Salary Sacrifice',   'Employer Payroll Delay',      '28 Feb', 'Open',   ' 0', 'Pending', '—'],
+      ['CMP-2026-094', 'Bridging',          'Fee Transparency',           '03 Feb', 'Closed', '18', 'Partial',    '£450'],
+      ['CMP-2026-095', 'Mortgages',         'Offer Withdrawal',            '06 Feb', 'Closed', '14', 'Not Upheld', '—'],
+      ['CMP-2026-096', 'Property Finance',  'Valuation Discrepancy',       '11 Feb', 'Closed', '11', 'Not Upheld', '—'],
+      ['CMP-2026-097', 'Mortgages',         'Communication / Arrears',     '14 Feb', 'Open',   ' 9', 'Pending',    '—'],
+      ['CMP-2026-098', 'Asset Finance',     'Broker Conduct',              '18 Feb', 'Closed',' 6', 'Upheld',     '£1,200'],
+      ['CMP-2026-099', 'Bridging',          'Extension Fee Query',         '22 Feb', 'Open',   ' 6', 'Pending',    '—'],
+      ['CMP-2026-100', 'Mortgages',         'Affordability Assessment',    '25 Feb', 'Open',   ' 3', 'Pending',    '—'],
+      ['CMP-2026-101', 'Mortgages',         'Data Subject Access Request', '27 Feb', 'Open',   ' 1', 'Pending',    '—'],
     ],
-    summary: { total: 7, closed: 2, open: 4, upheld: 1, partialUphold: 1, notUpheld: 1, totalRedress: '£120', rate: 0.18 },
-    note: 'Rate: 0.18 per 1,000 accounts (green threshold <0.20). FCA DISP reporting due end of H1 2026.',
+    summary: { total: 8, closed: 4, open: 4, upheld: 1, partialUphold: 1, notUpheld: 2, totalRedress: '£1,650', rate: 0.22 },
+    note: 'Rate: 0.22 per 1,000 accounts (green threshold <0.30). All complaints managed within FCA DISP 8-week clock.',
   },
 
-  // ─ Collections Performance ─
+  // ─ Collections / Watch & Recoveries Performance ─
   collections: {
-    headers: ['Stage', 'Accounts', 'Balance £000', 'Promise-to-Pay %', 'Kept %', 'Collected £000', 'Cure Rate %'],
+    headers: ['Stage', 'Accounts', 'Balance £m', 'Promise-to-Pay %', 'Kept %', 'Collected £m', 'Cure Rate %'],
     rows: [
-      ['Early Arrears (1–29 DPD)',  '168', ' 518', '68.4%', '71.2%', '  62', '42.3%'],
-      ['Mid Arrears (30–89 DPD)',   '148', ' 488', '54.2%', '64.8%', '  48', '28.1%'],
-      ['Late Arrears (90–179 DPD)', ' 72', ' 270', '38.4%', '52.4%', '  24', '14.2%'],
-      ['Pre-Write-off (≥180 DPD)',  ' 18', ' 320', '22.2%', '40.0%', '   8',  '6.8%'],
+      ['Pre-Arrears Watch',         ' 240',  '142', '—',     '—',      '—',    '—'],
+      ['Early Arrears (1–30 DPD)',  ' 380',  ' 85', '74.2%', '81.4%', '28.4',  '58.6%'],
+      ['Mid Arrears (31–90 DPD)',   ' 284',  ' 97', '62.8%', '71.2%', '22.8',  '38.4%'],
+      ['Late Arrears (90–365 DPD)', ' 186',  '131', '41.8%', '54.6%', '16.4',  '21.2%'],
+      ['Impaired (Watchlist/Rec.)',  ' 138', '131', '24.2%', '42.4%', ' 9.2',  ' 8.4%'],
     ],
-    totals: ['Total', '406', '1,596', '51.2%', '62.3%', '142', '26.4%'],
-    note: 'Collections recovery YTD: £142k (Feb). Cure rate = % of arrears accounts returned to current status within 90 days.',
+    totals: ['Total', '1,228', '586', '52.8%', '66.4%', '76.8', '29.8%'],
+    note: 'Collections Feb 2026: £76.8m recovered across stages. Cure rate = returned to performing within 90 days. Property cases subject to bespoke recovery plans in Watch & Recoveries Committee.',
   },
 
-  // ─ NBA (Next Best Action) Effectiveness ─
+  // ─ Next Best Action / Relationship Campaigns ─
   nba: {
     headers: ['NBA Campaign', 'Triggered', 'Response Rate', 'Outcome', 'Cost £'],
     rows: [
-      ['Early Arrears SMS Nudge',        '168', '42.3%', '37.5% promise-to-pay', ' £84'],
-      ['Consolidation Offer (ML arrears)',' 84', '18.6%', '12 applications generated', '£168'],
-      ['Repayment Holiday Offer',         ' 28', '28.6%', ' 8 accepted', ' £42'],
-      ['Rate Review (loyal members)',     '124', '31.5%', '18 top-ups generated', '£248'],
-      ['Member Savings Referral',         '214', '14.0%', '24 savings accounts opened', '£214'],
+      ['Early Arrears Outreach',          ' 380', '72.1%', '282 promise-to-pay arrangements','£  760'],
+      ['Pre-Maturity Retention (Mortg.)', ' 214', '38.4%', ' 82 Pipeline retention cases',   '£1,070'],
+      ['Bridging Exit Planning',          ' 164', '52.4%', ' 86 refinanced onto Term',       '£  820'],
+      ['Broker Re-engagement',            '1,824','24.1%', '440 broker activations',         '£2,190'],
+      ['Asset Finance Top-Up Offer',      ' 680', '18.7%', '127 incremental facilities',     '£1,360'],
     ],
-    note: 'NBA cost = direct outreach cost only (SMS/email). Excludes staff time.',
+    note: 'NBA cost = direct outreach only (broker portal / email / SMS). Excludes RM time.',
   },
 
-  // ─ Data Quality ─
+  // ─ Data Quality & Regulatory ─
   dataQuality: {
     headers: ['Metric', 'Score', 'Target', 'RAG', 'Notes'],
     rows: [
-      ['Open Banking Data Completeness', '96.4%', '≥95%', 'green', 'All OB fields populated where consent given'],
-      ['Address Verification Rate',       '99.1%', '≥98%', 'green', 'TransUnion Validate pass rate'],
-      ['Missing Employer Data',           ' 4.2%', ' ≤3%', 'amber', '14 records flagged; chase-up in progress'],
-      ['Affordability Model Inputs Complete','98.8%','≥97%','green','Household expenditure captured via OB/payslip'],
-      ['IFRS9 Staging Accuracy',          '99.6%', '≥99%', 'green', 'Monthly reconciliation vs GL passed'],
-      ['GDPR Data Retention Compliance',  '100%',  '100%', 'green', 'Auto-purge rules active; last audit Dec 2025'],
+      ['Valuation Data Completeness',       '98.6%', '≥98%',  'green', 'All new Property / Mortgages cases valued at drawdown'],
+      ['KYC / Sanctions Refresh Currency',  '99.4%', '≥99%',  'green', 'Watchlist re-screen weekly across live book'],
+      ['Missing Employer / Source of Funds',' 1.8%', ' ≤2%',  'green', '22 records flagged; broker chase-up in progress'],
+      ['Affordability Model Inputs',        '97.9%', '≥97%',  'green', 'Household + business affordability captured via broker portal'],
+      ['Provisioning Accuracy',             '99.8%', '≥99%',  'green', 'Monthly reconciliation vs core banking system'],
+      ['GDPR Data Retention',               '100%',  '100%',  'green', 'Auto-purge rules validated Dec 2025; ICO audit clean'],
     ],
   },
 
-  narrativePrompt: `You are a COO/Compliance Officer preparing the Operations & Compliance section for a Credit Union board pack (PRA/FCA regulated).
+  narrativePrompt: `You are the COO / Chief Compliance Officer of United Trust Bank preparing the Operations & Compliance section for the Feb 2026 board pack.
 3 paragraphs, max 90 words each:
-1. Consumer Duty outcomes — any amber/red areas, actions taken
-2. Complaints and regulatory position — FCA DISP metrics, any trends
-3. Collections and operational efficiency — SLA adherence, NBA effectiveness
+1. Consumer Duty outcomes — all six areas green, evidence package ready for FCA
+2. Complaints, SLAs and operational resilience — cyber investment, third party risk
+3. Collections and Watch & Recoveries — property-led focus, NBA effectiveness
 
 Data:
-- Consumer Duty: 5 of 6 outcomes green; Vulnerable Customer identification at 73.4% (amber, target 80%)
-- 6 complaints in month (0.18 per 1,000 — green); 2 open affordability queries re CL product
-- SLA adherence: 96%+ on all core processes except early arrears outreach (90.5% — amber)
-- Collections cure rate: 26.4% overall; early arrears cure 42.3%
-- NBA campaigns: early arrears SMS 42.3% response rate, consolidation offer generating 12 apps`,
+- Consumer Duty: all 6 outcomes green; vulnerable customer identification at 5.4%
+- Complaints: 8 received (0.22 per 1,000 accounts — green); total redress £1.65k
+- SLA adherence: ≥95% on all core processes including Broker Query Response
+- Cyber & ops resilience: significant investment in 2025 (advanced security, resilience testing, third-party risk)
+- Watch & Recoveries committee: 240 pre-arrears cases under enhanced oversight
+- NBA: early arrears outreach 72.1% response; Bridging exit planning converting 52% to term`,
 };
 
 /* ── 9. AI NARRATIVE SYSTEM ──────────────────────────────────────────────── */
 const AI_CONFIG = {
-  // Set your OpenAI API key here or leave empty to prompt at runtime
   apiKey: '',
   model: 'gpt-4o',
   maxTokens: 600,
   temperature: 0.3,
 };
 
-/**
- * generateNarrative(promptText, targetTextareaId)
- * Calls OpenAI chat completion and populates the editable textarea.
- * Falls back to a prompt for key entry if apiKey is not configured.
- */
 async function generateNarrative(promptText, targetTextareaId) {
   let key = AI_CONFIG.apiKey;
   if (!key) {
@@ -743,8 +718,6 @@ async function generateNarrative(promptText, targetTextareaId) {
     const data = await res.json();
     const text = data.choices?.[0]?.message?.content?.trim() || '(No response)';
     ta.value = text;
-
-    // Store in session for print
     _narrativeStore[`narrative_${targetTextareaId}`] = text;
 
   } catch (e) {
@@ -757,7 +730,6 @@ async function generateNarrative(promptText, targetTextareaId) {
   }
 }
 
-/* In-memory narrative store for transient state */
 const _narrativeStore = {};
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.narrative-textarea').forEach(ta => {

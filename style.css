@@ -96,10 +96,14 @@ table { border-collapse: collapse; width: 100%; }
 button { cursor: pointer; background: none; border: none; font: inherit; color: inherit; }
 
 /* ─── PAGE LAYOUT ──────────────────────────────────────────── */
+html, body { min-width: 1300px; }
+
 .pack-page {
-  max-width: 960px;
+  width: 100%;
+  max-width: none;
+  min-width: 1300px;
   margin: 0 auto;
-  padding: var(--sp-6) var(--sp-6);
+  padding: var(--sp-6) var(--sp-8);
   background: var(--ft-paper);
   min-height: 100vh;
 }
@@ -889,9 +893,17 @@ button { cursor: pointer; background: none; border: none; font: inherit; color: 
 }
 
 /* ─── RESPONSIVE ────────────────────────────────────────────── */
-@media (max-width: 768px) {
-  .chart-row-3, .chart-row-2, .chart-row-21, .chart-row-12,
-  .two-col, .three-col { grid-template-columns: 1fr; }
-  .rag-strip { grid-template-columns: repeat(2, 1fr); }
-  .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+/* Dashboard has a fixed minimum width of 1300px — below this users scroll horizontally */
+@media print {
+  html, body, .pack-page { min-width: 0; }
 }
+
+/* ─── MASTHEAD LOGO (UTB monogram) ──────────────────────────── */
+.masthead-logo img,
+.cover-logo img {
+  display: block;
+  height: 56px;
+  width: auto;
+}
+
+.cover-logo img { height: 80px; }

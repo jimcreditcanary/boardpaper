@@ -18,7 +18,7 @@
 <link rel="author" href="https://www.perplexity.ai/computer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Credit Risk — Credit Canary Board Pack Feb 2026</title>
+<title>Credit Risk — United Trust Bank Board Pack Feb 2026</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="config.js"></script>
@@ -30,14 +30,9 @@
   <header class="masthead">
     <div class="masthead-brand">
       <div class="masthead-logo">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-label="Credit Canary">
-          <rect width="32" height="32" rx="3" fill="#0A0A0A"/>
-          <path d="M8 22 L16 8 L24 22" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round" fill="none"/>
-          <circle cx="16" cy="22" r="2.5" fill="#E5B821"/>
-          <path d="M12 18 L16 14 L20 18" stroke="#E5B821" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
-        </svg>
+        <img src="assets/utb-mark.png" alt="United Trust Bank" width="56" height="56">
         <div>
-          <div class="masthead-title">Credit Canary</div>
+          <div class="masthead-title">United Trust Bank</div>
           <div class="masthead-subtitle">Board Analytics Pack</div>
         </div>
       </div>
@@ -76,8 +71,8 @@
         <thead>
           <tr>
             <th>Stage</th><th>Description</th>
-            <th class="num">Loans</th><th class="num">Balance £000</th>
-            <th class="num">% Book</th><th class="num">ECL £000</th>
+            <th class="num">Loans</th><th class="num">Balance £m</th>
+            <th class="num">% Book</th><th class="num">ECL £m</th>
             <th class="num">Coverage</th><th class="num">MoM Δ ECL</th>
           </tr>
         </thead>
@@ -103,9 +98,9 @@
       <table class="data-table">
         <thead>
           <tr>
-            <th>DPD Band</th><th class="num">Loans</th>
-            <th class="num">Balance £000</th><th class="num">% Book</th>
-            <th class="num">MoM Δ £k</th><th class="num">YoY Δ pp</th>
+            <th>Ageing Band</th><th class="num">Balance £m</th>
+            <th class="num">% Book</th><th class="num">MoM Δ £m</th>
+            <th class="num">YoY Δ pp</th>
           </tr>
         </thead>
         <tbody id="dpdBody"></tbody>
@@ -117,8 +112,8 @@
       <table class="data-table">
         <thead>
           <tr>
-            <th>Product</th><th class="num">Book £000</th>
-            <th class="num">Arrears £000</th><th class="num">Rate</th>
+            <th>Division</th><th class="num">Book £m</th>
+            <th class="num">Past-Due £m</th><th class="num">Rate</th>
             <th>RAG</th><th class="num">MoM Δ</th>
           </tr>
         </thead>
@@ -151,7 +146,7 @@
     <thead>
       <tr>
         <th>Product</th><th class="num">PD (%)</th><th class="num">LGD (%)</th>
-        <th class="num">EAD £000</th><th class="num">EL £000</th><th class="num">EL % Book</th>
+        <th class="num">EAD £m</th><th class="num">EL £m</th><th class="num">EL % Book</th>
       </tr>
     </thead>
     <tbody id="pdLgdBody"></tbody>
@@ -169,7 +164,7 @@
         <thead>
           <tr>
             <th>Arrangement</th><th class="num">Loans</th>
-            <th class="num">Balance £000</th><th class="num">% Book</th>
+            <th class="num">Balance £m</th><th class="num">% Book</th>
             <th class="num">Avg DPD</th><th class="num">Success*</th>
           </tr>
         </thead>
@@ -184,8 +179,8 @@
         <thead>
           <tr>
             <th>Month</th><th class="num">Loans</th>
-            <th class="num">Gross £000</th><th class="num">Recoveries £000</th>
-            <th class="num">Net £000</th>
+            <th class="num">Gross £m</th><th class="num">Recoveries £m</th>
+            <th class="num">Net £m</th>
           </tr>
         </thead>
         <tbody id="writeoffBody"></tbody>
@@ -211,7 +206,7 @@
   </div>
 
   <footer class="pack-footer">
-    <div>Credit Canary &mdash; Board Analytics Pack &middot; February 2026 &middot; Page 2 of 6</div>
+    <div>United Trust Bank &mdash; Board Analytics Pack &middot; February 2026 &middot; Page 2 of 6</div>
     <div class="footer-pplx"><a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a></div>
     <div>Strictly Confidential</div>
   </footer>
@@ -241,20 +236,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const dpdCtx = document.getElementById('dpdChart').getContext('2d');
   ftBarChart(dpdCtx,
     DATA_P2.dpdChart.labels,
-    [{ label:'Balance £000', data: DATA_P2.dpdChart.balances, backgroundColor: DATA_P2.dpdChart.colors, borderWidth: 0 }],
-    { plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` £${ctx.parsed.y.toLocaleString()}k` } } } }
+    [{ label:'Balance £m', data: DATA_P2.dpdChart.balances, backgroundColor: DATA_P2.dpdChart.colors, borderWidth: 0 }],
+    { plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` £${ctx.parsed.y.toLocaleString()}m` } } } }
   );
 
   /* ── DPD Table ── */
   DATA_P2.dpdBands.rows.forEach(r => {
     document.getElementById('dpdBody').innerHTML +=
       `<tr><td>${r[0]}</td><td class="num">${r[1]}</td><td class="num">${r[2]}</td>
-       <td class="num">${r[3]}</td><td class="num">${r[4]}</td><td class="num">${r[5]}</td></tr>`;
+       <td class="num">${r[3]}</td><td class="num">${r[4]}</td></tr>`;
   });
   const dt = DATA_P2.dpdBands.totals;
   document.getElementById('dpdFoot').innerHTML =
     `<tr style="font-weight:700;"><td>${dt[0]}</td><td class="num">${dt[1]}</td><td class="num">${dt[2]}</td>
-     <td class="num">${dt[3]}</td><td class="num">${dt[4]}</td><td class="num">${dt[5]}</td></tr>`;
+     <td class="num">${dt[3]}</td><td class="num">${dt[4]}</td></tr>`;
 
   /* ── Arrears by Product ── */
   DATA_P2.arrearsProduct.rows.forEach(r => {

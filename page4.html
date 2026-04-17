@@ -17,7 +17,7 @@
 <link rel="author" href="https://www.perplexity.ai/computer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portfolio Composition — Credit Canary Board Pack Feb 2026</title>
+<title>Portfolio Composition — United Trust Bank Board Pack Feb 2026</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="config.js"></script>
@@ -28,14 +28,9 @@
   <header class="masthead">
     <div class="masthead-brand">
       <div class="masthead-logo">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-label="Credit Canary">
-          <rect width="32" height="32" rx="3" fill="#0A0A0A"/>
-          <path d="M8 22 L16 8 L24 22" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round" fill="none"/>
-          <circle cx="16" cy="22" r="2.5" fill="#E5B821"/>
-          <path d="M12 18 L16 14 L20 18" stroke="#E5B821" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
-        </svg>
+        <img src="assets/utb-mark.png" alt="United Trust Bank" width="56" height="56">
         <div>
-          <div class="masthead-title">Credit Canary</div>
+          <div class="masthead-title">United Trust Bank</div>
           <div class="masthead-subtitle">Board Analytics Pack</div>
         </div>
       </div>
@@ -69,7 +64,7 @@
   <table class="data-table">
     <thead>
       <tr>
-        <th>Product</th><th class="num">Loans</th><th class="num">Balance £000</th>
+        <th>Division</th><th class="num">Loans</th><th class="num">Balance £m</th>
         <th class="num">% Book</th><th class="num">Avg Balance £</th>
         <th class="num">Avg Rate %</th><th class="num">Avg Term (mths)</th>
       </tr>
@@ -106,10 +101,10 @@
     <thead>
       <tr>
         <th>Term Band</th>
-        <th class="num">Member Loan</th>
-        <th class="num">Family Loan</th>
-        <th class="num">Consolidation</th>
-        <th class="num">Salary Sacrifice</th>
+        <th class="num">Property Finance</th>
+        <th class="num">Bridging</th>
+        <th class="num">Mortgages</th>
+        <th class="num">Asset Finance</th>
         <th class="num">Row Total</th>
       </tr>
     </thead>
@@ -173,7 +168,7 @@
   </div>
 
   <footer class="pack-footer">
-    <div>Credit Canary &mdash; Board Analytics Pack &middot; February 2026 &middot; Page 4 of 6</div>
+    <div>United Trust Bank &mdash; Board Analytics Pack &middot; February 2026 &middot; Page 4 of 6</div>
     <div class="footer-pplx"><a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a></div>
     <div>Strictly Confidential</div>
   </footer>
@@ -266,9 +261,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const rpCtx = document.getElementById('repeatChart').getContext('2d');
   ftBarChart(rpCtx,
     PRODUCTS.map(p => p.label),
-    [{ label:'Repeat %', data:[45.2,46.4,44.4,45.5], backgroundColor: PRODUCTS.map(p=>p.color), borderWidth:0 }],
+    [{ label:'Repeat %', data:[82.4, 71.2, 38.3, 79.7], backgroundColor: PRODUCTS.map(p=>p.color), borderWidth:0 }],
     { plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label: ctx => ` ${ctx.parsed.y}% repeat borrowers` } } },
-      scales:{ x:FT_CHART_DEFAULTS.scales.x, y:{ ...FT_CHART_DEFAULTS.scales.y, ticks:{ ...FT_CHART_DEFAULTS.scales.y.ticks, callback:v=>v+'%' }, suggestedMin:30, suggestedMax:55 } }
+      scales:{ x:FT_CHART_DEFAULTS.scales.x, y:{ ...FT_CHART_DEFAULTS.scales.y, ticks:{ ...FT_CHART_DEFAULTS.scales.y.ticks, callback:v=>v+'%' }, suggestedMin:30, suggestedMax:90 } }
     }
   );
 

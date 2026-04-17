@@ -17,7 +17,7 @@
 <link rel="author" href="https://www.perplexity.ai/computer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Operations &amp; Compliance — Credit Canary Board Pack Feb 2026</title>
+<title>Operations &amp; Compliance — United Trust Bank Board Pack Feb 2026</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="config.js"></script>
@@ -28,14 +28,9 @@
   <header class="masthead">
     <div class="masthead-brand">
       <div class="masthead-logo">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-label="Credit Canary">
-          <rect width="32" height="32" rx="3" fill="#0A0A0A"/>
-          <path d="M8 22 L16 8 L24 22" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round" fill="none"/>
-          <circle cx="16" cy="22" r="2.5" fill="#E5B821"/>
-          <path d="M12 18 L16 14 L20 18" stroke="#E5B821" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
-        </svg>
+        <img src="assets/utb-mark.png" alt="United Trust Bank" width="56" height="56">
         <div>
-          <div class="masthead-title">Credit Canary</div>
+          <div class="masthead-title">United Trust Bank</div>
           <div class="masthead-subtitle">Board Analytics Pack</div>
         </div>
       </div>
@@ -153,9 +148,9 @@
       <table class="data-table">
         <thead>
           <tr>
-            <th>Stage</th><th class="num">Accounts</th><th class="num">Balance £000</th>
+            <th>Stage</th><th class="num">Accounts</th><th class="num">Balance £m</th>
             <th class="num">Promise-to-Pay</th><th class="num">Kept</th>
-            <th class="num">Collected £000</th><th class="num">Cure Rate</th>
+            <th class="num">Collected £m</th><th class="num">Cure Rate</th>
           </tr>
         </thead>
         <tbody id="collBody"></tbody>
@@ -219,7 +214,7 @@
   </div>
 
   <footer class="pack-footer">
-    <div>Credit Canary &mdash; Board Analytics Pack &middot; February 2026 &middot; Page 6 of 6</div>
+    <div>United Trust Bank &mdash; Board Analytics Pack &middot; February 2026 &middot; Page 6 of 6</div>
     <div class="footer-pplx"><a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a></div>
     <div>Strictly Confidential</div>
   </footer>
@@ -292,10 +287,10 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ── Collections Chart ── */
   const collCtx = document.getElementById('collChart').getContext('2d');
   ftBarChart(collCtx,
-    ['Early\nArrears','Mid\nArrears','Late\nArrears','Pre-Write-off'],
+    ['Early\nArrears','Mid\nArrears','Late\nArrears','Watchlist /\nRecoveries'],
     [
-      { label:'Promise-to-Pay %', data:[68.4,54.2,38.4,22.2], backgroundColor:'rgba(10,10,10,0.3)', borderColor:'#0A0A0A', borderWidth:1 },
-      { label:'Cure Rate %', data:[42.3,28.1,14.2,6.8], backgroundColor: ['#1B7A3D','#D97706','#C0392B','#8B2A2A'], borderWidth:0 },
+      { label:'Promise-to-Pay %', data:[74.2, 62.8, 41.8, 24.2], backgroundColor:'rgba(10,10,10,0.3)', borderColor:'#0A0A0A', borderWidth:1 },
+      { label:'Cure Rate %', data:[58.6, 38.4, 21.2, 8.4], backgroundColor: ['#1B7A3D','#D97706','#C0392B','#8B2A2A'], borderWidth:0 },
     ],
     { scales:{ x:FT_CHART_DEFAULTS.scales.x, y:{ ...FT_CHART_DEFAULTS.scales.y, ticks:{ ...FT_CHART_DEFAULTS.scales.y.ticks, callback:v=>v+'%' }, suggestedMax:80 } } }
   );
