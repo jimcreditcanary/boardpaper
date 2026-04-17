@@ -29,10 +29,10 @@
     <div class="masthead-brand">
       <div class="masthead-logo">
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-label="Credit Canary">
-          <rect width="32" height="32" rx="3" fill="#1A1A1A"/>
-          <path d="M8 22 L16 8 L24 22" stroke="#FFF1E5" stroke-width="2" stroke-linejoin="round" fill="none"/>
-          <circle cx="16" cy="22" r="2.5" fill="#C08A20"/>
-          <path d="M12 18 L16 14 L20 18" stroke="#C08A20" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
+          <rect width="32" height="32" rx="3" fill="#0A0A0A"/>
+          <path d="M8 22 L16 8 L24 22" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round" fill="none"/>
+          <circle cx="16" cy="22" r="2.5" fill="#E5B821"/>
+          <path d="M12 18 L16 14 L20 18" stroke="#E5B821" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
         </svg>
         <div>
           <div class="masthead-title">Credit Canary</div>
@@ -275,16 +275,16 @@ document.addEventListener('DOMContentLoaded', () => {
       labels: DATA_P3.obTrend.labels,
       datasets: [{
         label: 'OB Adoption %', data: DATA_P3.obTrend.obPct,
-        borderColor: '#00757F', backgroundColor: 'rgba(0,117,127,0.1)', fill: true,
-        borderWidth: 2.5, pointRadius: 4, pointBackgroundColor: '#00757F', tension: 0.3,
+        borderColor: '#B8911A', backgroundColor: 'rgba(184,145,26,0.1)', fill: true,
+        borderWidth: 2.5, pointRadius: 4, pointBackgroundColor: '#B8911A', tension: 0.3,
       }]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: { ...FT_CHART_DEFAULTS.plugins, legend: { display: false },
         annotation: { annotations: {
-          line1: { type: 'line', yMin: 65, yMax: 65, borderColor: '#4A7C3F', borderWidth: 1, borderDash: [4,4],
-            label: { content: 'Green 65%', enabled: true, position: 'end', color: '#4A7C3F', font: { size: 10 } } }
+          line1: { type: 'line', yMin: 65, yMax: 65, borderColor: '#1B7A3D', borderWidth: 1, borderDash: [4,4],
+            label: { content: 'Green 65%', enabled: true, position: 'end', color: '#1B7A3D', font: { size: 10 } } }
         }}
       },
       scales: { x: FT_CHART_DEFAULTS.scales.x, y: { ...FT_CHART_DEFAULTS.scales.y,
@@ -299,13 +299,13 @@ document.addEventListener('DOMContentLoaded', () => {
   ftLineChart(ttdCtx,
     DATA_P3.ttdTrend.labels,
     [
-      { label: 'Auto (hrs)', data: DATA_P3.ttdTrend.auto, borderColor: '#4A7C3F', backgroundColor: 'transparent', borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#4A7C3F', tension: 0.3, yAxisID: 'y2' },
-      { label: 'Manual (hrs)', data: DATA_P3.ttdTrend.manual, borderColor: '#9A1B1B', backgroundColor: 'transparent', borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#9A1B1B', tension: 0.3, yAxisID: 'y' },
+      { label: 'Auto (hrs)', data: DATA_P3.ttdTrend.auto, borderColor: '#1B7A3D', backgroundColor: 'transparent', borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#1B7A3D', tension: 0.3, yAxisID: 'y2' },
+      { label: 'Manual (hrs)', data: DATA_P3.ttdTrend.manual, borderColor: '#C0392B', backgroundColor: 'transparent', borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#C0392B', tension: 0.3, yAxisID: 'y' },
     ],
     { scales: {
         x: FT_CHART_DEFAULTS.scales.x,
-        y:  { ...FT_CHART_DEFAULTS.scales.y, position: 'left', title: { display: true, text: 'Manual hrs', font: { size: 10 }, color: '#666258' } },
-        y2: { ...FT_CHART_DEFAULTS.scales.y, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Auto hrs', font: { size: 10 }, color: '#666258' } },
+        y:  { ...FT_CHART_DEFAULTS.scales.y, position: 'left', title: { display: true, text: 'Manual hrs', font: { size: 10 }, color: '#6B7280' } },
+        y2: { ...FT_CHART_DEFAULTS.scales.y, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Auto hrs', font: { size: 10 }, color: '#6B7280' } },
       }
     }
   );

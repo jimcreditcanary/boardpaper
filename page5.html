@@ -29,10 +29,10 @@
     <div class="masthead-brand">
       <div class="masthead-logo">
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-label="Credit Canary">
-          <rect width="32" height="32" rx="3" fill="#1A1A1A"/>
-          <path d="M8 22 L16 8 L24 22" stroke="#FFF1E5" stroke-width="2" stroke-linejoin="round" fill="none"/>
-          <circle cx="16" cy="22" r="2.5" fill="#C08A20"/>
-          <path d="M12 18 L16 14 L20 18" stroke="#C08A20" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
+          <rect width="32" height="32" rx="3" fill="#0A0A0A"/>
+          <path d="M8 22 L16 8 L24 22" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round" fill="none"/>
+          <circle cx="16" cy="22" r="2.5" fill="#E5B821"/>
+          <path d="M12 18 L16 14 L20 18" stroke="#E5B821" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
         </svg>
         <div>
           <div class="masthead-title">Credit Canary</div>
@@ -239,9 +239,9 @@ document.addEventListener('DOMContentLoaded', () => {
   ftLineChart(nimCtx,
     DATA_P5.nimTrend.labels,
     [
-      { label:'Gross Yield %', data: DATA_P5.nimTrend.grossYield, borderColor:'#1F6091', backgroundColor:'transparent', borderWidth:2, pointRadius:2, tension:0.3 },
-      { label:'Cost of Funds %', data: DATA_P5.nimTrend.costFunds, borderColor:'#9A1B1B', backgroundColor:'transparent', borderWidth:1.5, borderDash:[4,3], pointRadius:2, tension:0.3 },
-      { label:'Risk-Adj NIM %', data: DATA_P5.nimTrend.riskAdjNim, borderColor:'#4A7C3F', backgroundColor:'rgba(74,124,63,0.1)', fill:true, borderWidth:2.5, pointRadius:3, tension:0.3 },
+      { label:'Gross Yield %', data: DATA_P5.nimTrend.grossYield, borderColor:'#0A0A0A', backgroundColor:'transparent', borderWidth:2, pointRadius:2, tension:0.3 },
+      { label:'Cost of Funds %', data: DATA_P5.nimTrend.costFunds, borderColor:'#C0392B', backgroundColor:'transparent', borderWidth:1.5, borderDash:[4,3], pointRadius:2, tension:0.3 },
+      { label:'Risk-Adj NIM %', data: DATA_P5.nimTrend.riskAdjNim, borderColor:'#1B7A3D', backgroundColor:'rgba(27,122,61,0.1)', fill:true, borderWidth:2.5, pointRadius:3, tension:0.3 },
     ],
     { scales:{ x:FT_CHART_DEFAULTS.scales.x, y:{ ...FT_CHART_DEFAULTS.scales.y, ticks:{ ...FT_CHART_DEFAULTS.scales.y.ticks, callback:v=>v+'%' }, suggestedMin:0, suggestedMax:9 } } }
   );
@@ -288,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ftDoughnut(cofCtx,
     DATA_P5.costOfFunds.rows.map(r=>r[0]),
     [59.3, 22.4, 12.7, 5.5],
-    ['#1F6091','#00757F','#C08A20','#9A1B1B'],
+    ['#0A0A0A','#B8911A','#E5B821','#C0392B'],
     { plugins:{ legend:{ display:true, position:'right' }, tooltip:{ callbacks:{ label: ctx => ` ${ctx.parsed.toFixed(1)}% of funding mix` } } } }
   );
 
@@ -308,8 +308,8 @@ document.addEventListener('DOMContentLoaded', () => {
     data: {
       labels: DATA_P5.capital.rwaTrend.labels,
       datasets: [
-        { type:'bar', label:'RWA £m', data: DATA_P5.capital.rwaTrend.rwa, backgroundColor:'rgba(31,96,145,0.2)', borderColor:'#1F6091', borderWidth:1, yAxisID:'y' },
-        { type:'line', label:'Capital Ratio %', data: DATA_P5.capital.rwaTrend.ratio, borderColor:'#4A7C3F', backgroundColor:'transparent', borderWidth:2.5, pointRadius:3, pointBackgroundColor:'#4A7C3F', tension:0.3, yAxisID:'y2' },
+        { type:'bar', label:'RWA £m', data: DATA_P5.capital.rwaTrend.rwa, backgroundColor:'rgba(10,10,10,0.2)', borderColor:'#0A0A0A', borderWidth:1, yAxisID:'y' },
+        { type:'line', label:'Capital Ratio %', data: DATA_P5.capital.rwaTrend.ratio, borderColor:'#1B7A3D', backgroundColor:'transparent', borderWidth:2.5, pointRadius:3, pointBackgroundColor:'#1B7A3D', tension:0.3, yAxisID:'y2' },
       ]
     },
     options: {
@@ -317,8 +317,8 @@ document.addEventListener('DOMContentLoaded', () => {
       plugins:{ ...FT_CHART_DEFAULTS.plugins, legend:{ ...FT_CHART_DEFAULTS.plugins.legend, position:'bottom' } },
       scales:{
         x: FT_CHART_DEFAULTS.scales.x,
-        y:  { ...FT_CHART_DEFAULTS.scales.y, position:'left', title:{ display:true, text:'RWA £m', font:{size:10}, color:'#666258' } },
-        y2: { ...FT_CHART_DEFAULTS.scales.y, position:'right', grid:{ drawOnChartArea:false }, ticks:{ ...FT_CHART_DEFAULTS.scales.y.ticks, callback:v=>v+'%' }, title:{ display:true, text:'Capital %', font:{size:10}, color:'#666258' }, suggestedMin:10, suggestedMax:16 },
+        y:  { ...FT_CHART_DEFAULTS.scales.y, position:'left', title:{ display:true, text:'RWA £m', font:{size:10}, color:'#6B7280' } },
+        y2: { ...FT_CHART_DEFAULTS.scales.y, position:'right', grid:{ drawOnChartArea:false }, ticks:{ ...FT_CHART_DEFAULTS.scales.y.ticks, callback:v=>v+'%' }, title:{ display:true, text:'Capital %', font:{size:10}, color:'#6B7280' }, suggestedMin:10, suggestedMax:16 },
       }
     }
   });
@@ -328,8 +328,8 @@ document.addEventListener('DOMContentLoaded', () => {
   ftLineChart(ctiCtx,
     DATA_P5.ctiTrend.labels,
     [
-      { label:'Actual C:I %', data: DATA_P5.ctiTrend.cti, borderColor:'#9A1B1B', backgroundColor:'rgba(154,27,27,0.07)', fill:true, borderWidth:2, pointRadius:3, pointBackgroundColor:'#9A1B1B', tension:0.3 },
-      { label:'Budget C:I %', data: DATA_P5.ctiTrend.budget, borderColor:'#4A7C3F', backgroundColor:'transparent', borderWidth:1.5, borderDash:[5,4], pointRadius:2, tension:0.3 },
+      { label:'Actual C:I %', data: DATA_P5.ctiTrend.cti, borderColor:'#C0392B', backgroundColor:'rgba(192,57,43,0.07)', fill:true, borderWidth:2, pointRadius:3, pointBackgroundColor:'#C0392B', tension:0.3 },
+      { label:'Budget C:I %', data: DATA_P5.ctiTrend.budget, borderColor:'#1B7A3D', backgroundColor:'transparent', borderWidth:1.5, borderDash:[5,4], pointRadius:2, tension:0.3 },
     ],
     { scales:{ x:FT_CHART_DEFAULTS.scales.x, y:{ ...FT_CHART_DEFAULTS.scales.y, ticks:{ ...FT_CHART_DEFAULTS.scales.y.ticks, callback:v=>v+'%' }, suggestedMin:52, suggestedMax:72 } } }
   );

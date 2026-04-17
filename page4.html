@@ -29,10 +29,10 @@
     <div class="masthead-brand">
       <div class="masthead-logo">
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-label="Credit Canary">
-          <rect width="32" height="32" rx="3" fill="#1A1A1A"/>
-          <path d="M8 22 L16 8 L24 22" stroke="#FFF1E5" stroke-width="2" stroke-linejoin="round" fill="none"/>
-          <circle cx="16" cy="22" r="2.5" fill="#C08A20"/>
-          <path d="M12 18 L16 14 L20 18" stroke="#C08A20" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
+          <rect width="32" height="32" rx="3" fill="#0A0A0A"/>
+          <path d="M8 22 L16 8 L24 22" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round" fill="none"/>
+          <circle cx="16" cy="22" r="2.5" fill="#E5B821"/>
+          <path d="M12 18 L16 14 L20 18" stroke="#E5B821" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
         </svg>
         <div>
           <div class="masthead-title">Credit Canary</div>
@@ -198,21 +198,21 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ── Value Chart ── */
   const vCtx = document.getElementById('valueChart').getContext('2d');
   ftBarChart(vCtx, DATA_P4.valueBands.labels,
-    [{ label:'Loans', data: DATA_P4.valueBands.loans, backgroundColor:'#1F6091', borderWidth:0 }],
+    [{ label:'Loans', data: DATA_P4.valueBands.loans, backgroundColor:'#0A0A0A', borderWidth:0 }],
     { plugins:{ legend:{ display:false } }, scales:{ x:{ ...FT_CHART_DEFAULTS.scales.x, ticks:{ ...FT_CHART_DEFAULTS.scales.x.ticks, maxRotation:45, font:{size:9} }}, y:FT_CHART_DEFAULTS.scales.y }}
   );
 
   /* ── Term Chart ── */
   const tCtx = document.getElementById('termChart').getContext('2d');
   ftBarChart(tCtx, DATA_P4.termBands.labels,
-    [{ label:'Loans', data: DATA_P4.termBands.loans, backgroundColor:'#00757F', borderWidth:0 }],
+    [{ label:'Loans', data: DATA_P4.termBands.loans, backgroundColor:'#B8911A', borderWidth:0 }],
     { plugins:{ legend:{ display:false } } }
   );
 
   /* ── Rate Chart ── */
   const rCtx = document.getElementById('rateChart').getContext('2d');
   ftBarChart(rCtx, DATA_P4.rateBands.labelsClean,
-    [{ label:'Loans', data: DATA_P4.rateBands.loansClean, backgroundColor:'#C08A20', borderWidth:0 }],
+    [{ label:'Loans', data: DATA_P4.rateBands.loansClean, backgroundColor:'#E5B821', borderWidth:0 }],
     { plugins:{ legend:{ display:false } }, scales:{ x:{ ...FT_CHART_DEFAULTS.scales.x, ticks:{ ...FT_CHART_DEFAULTS.scales.x.ticks, maxRotation:45, font:{size:9} }}, y:FT_CHART_DEFAULTS.scales.y }}
   );
 

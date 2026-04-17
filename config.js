@@ -81,10 +81,10 @@ function ragStatus(metric, value, lowerIsBetter = false) {
 
 /* ── 2. PRODUCT MASTER ───────────────────────────────────────────────────── */
 const PRODUCTS = [
-  { code: 'ML', label: 'Member Loan',        retoolKey: 'Member Loan',        color: '#1F6091' },
-  { code: 'FL', label: 'Family Loan',        retoolKey: 'Family Credit',       color: '#00757F' },
-  { code: 'CL', label: 'Consolidation Loan', retoolKey: 'Debt Consolidation',  color: '#9A1B1B' },
-  { code: 'SS', label: 'Salary Sacrifice',   retoolKey: 'Salary Sacrifice',    color: '#C08A20' },
+  { code: 'ML', label: 'Member Loan',        retoolKey: 'Member Loan',        color: '#0A0A0A' },
+  { code: 'FL', label: 'Family Loan',        retoolKey: 'Family Credit',       color: '#B8911A' },
+  { code: 'CL', label: 'Consolidation Loan', retoolKey: 'Debt Consolidation',  color: '#C0392B' },
+  { code: 'SS', label: 'Salary Sacrifice',   retoolKey: 'Salary Sacrifice',    color: '#E5B821' },
 ];
 
 const PRODUCT_COLORS = PRODUCTS.reduce((m, p) => { m[p.code] = p.color; return m; }, {});
@@ -194,7 +194,7 @@ const DATA_P2 = {
   dpdChart: {
     labels:   ['Current','1–29','30–59','60–89','90–119','120–179','≥180'],
     balances: [12604, 518, 312, 176, 158, 112, 320],
-    colors:   ['#4A7C3F','#8BC34A','#D8722A','#E65100','#9A1B1B','#7B1818','#4A0E0E'],
+    colors:   ['#1B7A3D','#4EA35A','#D97706','#B85E00','#C0392B','#8B2A2A','#5C1A1A'],
   },
 
   // ─ Arrears by Product ─
@@ -214,7 +214,7 @@ const DATA_P2 = {
     labels:  ['Opening ECL','New Originations','Stage Migration S1→S2','Stage Migration S2→S3','Write-offs','Model Update','Closing ECL'],
     values:  [402, +28, +31, +19, -24, +13, 469],
     base:    [0,  402, 430, 461, 480, 456, 0],
-    colors:  ['#1F6091','#4A7C3F','#D8722A','#9A1B1B','#4A7C3F','#D8722A','#1F6091'],
+    colors:  ['#0A0A0A','#1B7A3D','#D97706','#C0392B','#1B7A3D','#D97706','#0A0A0A'],
     isTotal: [true, false, false, false, false, false, true],
   },
 
@@ -235,10 +235,10 @@ const DATA_P2 = {
   vintages: {
     labels: ['M3','M6','M9','M12','M18','M24','M30','M36'],
     series: [
-      { label:'2022 Cohort', data:[0.1,0.3,0.6,1.0,1.7,2.4,2.9,3.2], color:'#CCC0B3' },
-      { label:'2023 Cohort', data:[0.2,0.5,0.8,1.4,2.1,3.0,3.5,null], color:'#1F6091' },
-      { label:'2024 Cohort', data:[0.3,0.6,1.1,1.8,2.9,null,null,null], color:'#C08A20' },
-      { label:'2025 Cohort', data:[0.4,0.8,1.4,null,null,null,null,null], color:'#9A1B1B' },
+      { label:'2022 Cohort', data:[0.1,0.3,0.6,1.0,1.7,2.4,2.9,3.2], color:'#D1D5DB' },
+      { label:'2023 Cohort', data:[0.2,0.5,0.8,1.4,2.1,3.0,3.5,null], color:'#0A0A0A' },
+      { label:'2024 Cohort', data:[0.3,0.6,1.1,1.8,2.9,null,null,null], color:'#E5B821' },
+      { label:'2025 Cohort', data:[0.4,0.8,1.4,null,null,null,null,null], color:'#C0392B' },
     ],
   },
 
@@ -288,12 +288,12 @@ const DATA_P3 = {
   // ─ Application Funnel ─
   funnel: {
     steps: [
-      { label:'Applications Received',  value: 642, pct:'100%', color:'#1F6091' },
-      { label:'Passed Initial Screen',  value: 589, pct:' 91.7%', color:'#1a5580' },
-      { label:'Credit Search Completed',value: 543, pct:' 84.6%', color:'#155070' },
-      { label:'Decisioned',             value: 521, pct:' 81.2%', color:'#104060' },
-      { label:'Approved',               value: 401, pct:' 62.5%', color:'#0a3050' },
-      { label:'Funded (Disbursed)',      value: 367, pct:' 57.2%', color:'#051e30' },
+      { label:'Applications Received',  value: 642, pct:'100%', color:'#0A0A0A' },
+      { label:'Passed Initial Screen',  value: 589, pct:' 91.7%', color:'#2D2D2D' },
+      { label:'Credit Search Completed',value: 543, pct:' 84.6%', color:'#4A4A4A' },
+      { label:'Decisioned',             value: 521, pct:' 81.2%', color:'#8B6E10' },
+      { label:'Approved',               value: 401, pct:' 62.5%', color:'#B8911A' },
+      { label:'Funded (Disbursed)',      value: 367, pct:' 57.2%', color:'#E5B821' },
     ],
     note: 'Feb 2026. Fall-out between Approved and Funded includes withdrew/did not proceed (34 applications).',
   },
@@ -509,7 +509,7 @@ const DATA_P5 = {
     labels:  ['Gross Interest\nIncome','Funding Cost','Fee Income','Net Interest\nIncome','ECL Charge','Risk-Adj NII'],
     values:  [894, -178, 51, 767, -96, 671],
     annRate: [7.58, -1.51, 0.43, 6.50, -0.81, 5.69],  // % of avg book
-    colors:  ['#1F6091','#9A1B1B','#4A7C3F','#1F6091','#9A1B1B','#00757F'],
+    colors:  ['#0A0A0A','#C0392B','#1B7A3D','#E5B821','#B8911A','#6B7280'],
     isNeg:   [false, true, false, false, true, false],
   },
 
@@ -774,28 +774,28 @@ const FT_CHART_DEFAULTS = {
   plugins: {
     legend: {
       labels: {
-        font: { family: "'Source Sans 3', Arial, sans-serif", size: 11 },
-        color: '#666258',
+        font: { family: "'Inter', system-ui, sans-serif", size: 11 },
+        color: '#6B7280',
         boxWidth: 12,
         padding: 12,
       },
     },
     tooltip: {
-      backgroundColor: '#1A1A1A',
-      titleFont: { family: "'Source Sans 3', Arial, sans-serif", size: 11, weight: '600' },
-      bodyFont:  { family: "'Source Sans 3', Arial, sans-serif", size: 11 },
+      backgroundColor: '#0A0A0A',
+      titleFont: { family: "'Inter', system-ui, sans-serif", size: 11, weight: '600' },
+      bodyFont:  { family: "'Inter', system-ui, sans-serif", size: 11 },
       padding: 10,
-      cornerRadius: 2,
+      cornerRadius: 6,
     },
   },
   scales: {
     x: {
-      ticks: { font: { family: "'Source Sans 3', Arial, sans-serif", size: 10 }, color: '#666258' },
-      grid:  { color: '#E6D9CC' },
+      ticks: { font: { family: "'Inter', system-ui, sans-serif", size: 10 }, color: '#6B7280' },
+      grid:  { color: '#E5E7EB' },
     },
     y: {
-      ticks: { font: { family: "'Source Sans 3', Arial, sans-serif", size: 10 }, color: '#666258' },
-      grid:  { color: '#E6D9CC' },
+      ticks: { font: { family: "'Inter', system-ui, sans-serif", size: 10 }, color: '#6B7280' },
+      grid:  { color: '#E5E7EB' },
     },
   },
 };
@@ -827,7 +827,7 @@ function ftBarChart(ctx, labels, datasets, opts = {}) {
 function ftDoughnut(ctx, labels, data, colors, opts = {}) {
   return new Chart(ctx, {
     type: 'doughnut',
-    data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 2, borderColor: '#FFF1E5' }] },
+    data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 2, borderColor: '#FFFFFF' }] },
     options: {
       responsive: true, maintainAspectRatio: false,
       cutout: '65%',

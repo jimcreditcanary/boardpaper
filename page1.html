@@ -31,10 +31,10 @@
     <div class="masthead-brand">
       <div class="masthead-logo">
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-label="Credit Canary">
-          <rect width="32" height="32" rx="3" fill="#1A1A1A"/>
-          <path d="M8 22 L16 8 L24 22" stroke="#FFF1E5" stroke-width="2" stroke-linejoin="round" fill="none"/>
-          <circle cx="16" cy="22" r="2.5" fill="#C08A20"/>
-          <path d="M12 18 L16 14 L20 18" stroke="#C08A20" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
+          <rect width="32" height="32" rx="3" fill="#0A0A0A"/>
+          <path d="M8 22 L16 8 L24 22" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round" fill="none"/>
+          <circle cx="16" cy="22" r="2.5" fill="#E5B821"/>
+          <path d="M12 18 L16 14 L20 18" stroke="#E5B821" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
         </svg>
         <div>
           <div class="masthead-title">Credit Canary</div>
@@ -212,8 +212,8 @@ document.addEventListener('DOMContentLoaded', () => {
           type: 'bar',
           label: 'Net New Lending £m',
           data: DATA_P1.bookTrend.newLend,
-          backgroundColor: 'rgba(31,96,145,0.25)',
-          borderColor: '#1F6091',
+          backgroundColor: 'rgba(10,10,10,0.25)',
+          borderColor: '#0A0A0A',
           borderWidth: 1,
           yAxisID: 'y2',
         },
@@ -221,11 +221,11 @@ document.addEventListener('DOMContentLoaded', () => {
           type: 'line',
           label: 'Book Balance £m',
           data: DATA_P1.bookTrend.balance,
-          borderColor: '#1A1A1A',
+          borderColor: '#0A0A0A',
           backgroundColor: 'transparent',
           borderWidth: 2.5,
           pointRadius: 3,
-          pointBackgroundColor: '#1A1A1A',
+          pointBackgroundColor: '#0A0A0A',
           tension: 0.3,
           yAxisID: 'y',
         },
@@ -236,8 +236,8 @@ document.addEventListener('DOMContentLoaded', () => {
       plugins: { ...FT_CHART_DEFAULTS.plugins, legend: { ...FT_CHART_DEFAULTS.plugins.legend, position: 'bottom' } },
       scales: {
         x: FT_CHART_DEFAULTS.scales.x,
-        y:  { ...FT_CHART_DEFAULTS.scales.y, position: 'left',  title: { display: true, text: '£m', font: { size: 10 }, color: '#666258' } },
-        y2: { ...FT_CHART_DEFAULTS.scales.y, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'New Lend £m', font: { size: 10 }, color: '#666258' } },
+        y:  { ...FT_CHART_DEFAULTS.scales.y, position: 'left',  title: { display: true, text: '£m', font: { size: 10 }, color: '#6B7280' } },
+        y2: { ...FT_CHART_DEFAULTS.scales.y, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'New Lend £m', font: { size: 10 }, color: '#6B7280' } },
       },
     }
   });
@@ -251,12 +251,12 @@ document.addEventListener('DOMContentLoaded', () => {
       datasets: [{
         label: 'Arrears ≥30 DPD %',
         data: DATA_P1.bookTrend.arrears30,
-        borderColor: '#9A1B1B',
-        backgroundColor: 'rgba(154,27,27,0.08)',
+        borderColor: '#C0392B',
+        backgroundColor: 'rgba(192,57,43,0.08)',
         fill: true,
         borderWidth: 2,
         pointRadius: 3,
-        pointBackgroundColor: '#9A1B1B',
+        pointBackgroundColor: '#C0392B',
         tension: 0.3,
       }]
     },
