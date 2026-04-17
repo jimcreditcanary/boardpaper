@@ -621,12 +621,6 @@ html, body { min-width: 1300px; }
   flex-wrap: wrap;
 }
 
-.footer-pplx a {
-  color: var(--color-text-muted);
-  text-decoration: none;
-}
-.footer-pplx a:hover { text-decoration: underline; }
-
 /* ─── PAGE NAV (screen only) ────────────────────────────────── */
 .page-nav {
   display: flex;
