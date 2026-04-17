@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
+-->
+<meta name="generator" content="Perplexity Computer">
+<meta name="author" content="Perplexity Computer">
+<meta property="og:see_also" content="https://www.perplexity.ai/computer">
+<link rel="author" href="https://www.perplexity.ai/computer">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio Composition — Credit Canary Board Pack Feb 2026</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="config.js"></script>
+</head>
+<body>
+<div class="pack-page">
+
+  <header class="masthead">
+    <div class="masthead-brand">
+      <div class="masthead-logo">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-label="Credit Canary">
+          <rect width="32" height="32" rx="3" fill="#1A1A1A"/>
+          <path d="M8 22 L16 8 L24 22" stroke="#FFF1E5" stroke-width="2" stroke-linejoin="round" fill="none"/>
+          <circle cx="16" cy="22" r="2.5" fill="#C08A20"/>
+          <path d="M12 18 L16 14 L20 18" stroke="#C08A20" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
+        </svg>
+        <div>
+          <div class="masthead-title">Credit Canary</div>
+          <div class="masthead-subtitle">Board Analytics Pack</div>
+        </div>
+      </div>
+    </div>
+    <div class="masthead-meta">
+      <div><strong>February 2026</strong> &nbsp;·&nbsp; As at 28 Feb 2026</div>
+      <div class="confidential-badge">Strictly Confidential</div>
+    </div>
+  </header>
+
+  <nav class="page-nav no-print">
+    <a href="index.html" class="nav-link">Contents</a>
+    <a href="page1.html" class="nav-link">1 · Executive Summary</a>
+    <a href="page2.html" class="nav-link">2 · Credit Risk</a>
+    <a href="page3.html" class="nav-link">3 · Origination</a>
+    <a href="page4.html" class="nav-link active">4 · Portfolio</a>
+    <a href="page5.html" class="nav-link">5 · Income &amp; Capital</a>
+    <a href="page6.html" class="nav-link">6 · Operations</a>
+  </nav>
+
+  <div class="page-header">
+    <div>
+      <div class="page-label">Section 4 — Portfolio</div>
+      <h1 class="page-title">Portfolio Composition</h1>
+    </div>
+    <div class="page-badge">February 2026</div>
+  </div>
+
+  <!-- ─ Product Stratification ─ -->
+  <div class="section-title">Book Stratification by Product</div>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Product</th><th class="num">Loans</th><th class="num">Balance £000</th>
+        <th class="num">% Book</th><th class="num">Avg Balance £</th>
+        <th class="num">Avg Rate %</th><th class="num">Avg Term (mths)</th>
+      </tr>
+    </thead>
+    <tbody id="stratBody"></tbody>
+    <tfoot id="stratFoot"></tfoot>
+  </table>
+
+  <hr class="divider">
+
+  <!-- ─ Distribution Charts ─ -->
+  <div class="section-title">Loan Distribution Analysis</div>
+  <div class="chart-row chart-row-3">
+    <div class="chart-panel">
+      <div class="chart-panel-title">By Loan Value Band</div>
+      <div class="chart-canvas-wrap" style="height:180px;"><canvas id="valueChart"></canvas></div>
+    </div>
+    <div class="chart-panel">
+      <div class="chart-panel-title">By Loan Term Band</div>
+      <div class="chart-canvas-wrap" style="height:180px;"><canvas id="termChart"></canvas></div>
+    </div>
+    <div class="chart-panel">
+      <div class="chart-panel-title">By Interest Rate Band</div>
+      <div class="chart-canvas-wrap" style="height:180px;"><canvas id="rateChart"></canvas></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ─ Term × Product Heatmap ─ -->
+  <div class="section-title">Loan Count Heatmap — Term Band × Product</div>
+  <p class="text-xs text-muted mb-4">Darker blue = higher loan count concentration.</p>
+  <table class="data-table heatmap-table" id="heatmapTable">
+    <thead>
+      <tr>
+        <th>Term Band</th>
+        <th class="num">Member Loan</th>
+        <th class="num">Family Loan</th>
+        <th class="num">Consolidation</th>
+        <th class="num">Salary Sacrifice</th>
+        <th class="num">Row Total</th>
+      </tr>
+    </thead>
+    <tbody id="heatmapBody"></tbody>
+    <tfoot id="heatmapFoot"></tfoot>
+  </table>
+
+  <hr class="divider">
+
+  <!-- ─ Concentration Risk + Repeat Borrowers ─ -->
+  <div class="chart-row chart-row-2">
+    <div>
+      <div class="section-title">Concentration Risk</div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Metric</th><th>Value</th><th>Limit</th>
+            <th class="num">Utilisation</th><th>RAG</th>
+          </tr>
+        </thead>
+        <tbody id="concBody"></tbody>
+      </table>
+    </div>
+    <div>
+      <div class="section-title">Repeat Borrower &amp; Top-Up Analysis</div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Product</th><th class="num">New</th><th class="num">Top-Up</th>
+            <th class="num">Repeat</th><th class="num">Repeat %</th>
+            <th class="num">Avg Top-Up £</th><th class="num">MoM Δ</th>
+          </tr>
+        </thead>
+        <tbody id="repeatBody"></tbody>
+        <tfoot id="repeatFoot"></tfoot>
+      </table>
+      <p class="text-xs text-muted mt-3" id="repeatNote"></p>
+
+      <!-- Repeat borrower mini-chart -->
+      <div class="chart-panel mt-4">
+        <div class="chart-panel-title">Repeat Borrower % by Product</div>
+        <div class="chart-canvas-wrap" style="height:130px;"><canvas id="repeatChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─ AI Narrative ─ -->
+  <div class="narrative-section">
+    <div class="narrative-header">
+      <div class="narrative-label">Portfolio Narrative — Composition &amp; Concentration</div>
+      <button class="ai-generate-btn no-print"
+              data-narrative-btn="narrative-p4"
+              onclick="generateNarrative(DATA_P4.narrativePrompt, 'narrative-p4')">
+        ✦ Generate AI Narrative
+      </button>
+    </div>
+    <textarea id="narrative-p4" class="narrative-textarea"
+              placeholder="Click 'Generate AI Narrative' to produce a portfolio composition commentary, then edit before printing."></textarea>
+    <p class="narrative-print-p narrative-box" id="narrative-p4-print"></p>
+    <p class="narrative-hint no-print">Reviews book stratification, distribution, concentration limits and repeat borrower trends.</p>
+  </div>
+
+  <footer class="pack-footer">
+    <div>Credit Canary &mdash; Board Analytics Pack &middot; February 2026 &middot; Page 4 of 6</div>
+    <div class="footer-pplx"><a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a></div>
+    <div>Strictly Confidential</div>
+  </footer>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  /* ── Stratification ── */
+  DATA_P4.productStratification.rows.forEach(r => {
+    document.getElementById('stratBody').innerHTML +=
+      `<tr><td>${r[0]}</td><td class="num">${r[1]}</td><td class="num">${r[2]}</td>
+       <td class="num">${r[3]}</td><td class="num">${r[4]}</td>
+       <td class="num">${r[5]}</td><td class="num">${r[6]}</td></tr>`;
+  });
+  const st = DATA_P4.productStratification.totals;
+  document.getElementById('stratFoot').innerHTML =
+    `<tr style="font-weight:700;"><td>${st[0]}</td><td class="num">${st[1]}</td><td class="num">${st[2]}</td>
+     <td class="num">${st[3]}</td><td class="num">${st[4]}</td>
+     <td class="num">${st[5]}</td><td class="num">${st[6]}</td></tr>`;
+
+  /* ── Value Chart ── */
+  const vCtx = document.getElementById('valueChart').getContext('2d');
+  ftBarChart(vCtx, DATA_P4.valueBands.labels,
+    [{ label:'Loans', data: DATA_P4.valueBands.loans, backgroundColor:'#1F6091', borderWidth:0 }],
+    { plugins:{ legend:{ display:false } }, scales:{ x:{ ...FT_CHART_DEFAULTS.scales.x, ticks:{ ...FT_CHART_DEFAULTS.scales.x.ticks, maxRotation:45, font:{size:9} }}, y:FT_CHART_DEFAULTS.scales.y }}
+  );
+
+  /* ── Term Chart ── */
+  const tCtx = document.getElementById('termChart').getContext('2d');
+  ftBarChart(tCtx, DATA_P4.termBands.labels,
+    [{ label:'Loans', data: DATA_P4.termBands.loans, backgroundColor:'#00757F', borderWidth:0 }],
+    { plugins:{ legend:{ display:false } } }
+  );
+
+  /* ── Rate Chart ── */
+  const rCtx = document.getElementById('rateChart').getContext('2d');
+  ftBarChart(rCtx, DATA_P4.rateBands.labelsClean,
+    [{ label:'Loans', data: DATA_P4.rateBands.loansClean, backgroundColor:'#C08A20', borderWidth:0 }],
+    { plugins:{ legend:{ display:false } }, scales:{ x:{ ...FT_CHART_DEFAULTS.scales.x, ticks:{ ...FT_CHART_DEFAULTS.scales.x.ticks, maxRotation:45, font:{size:9} }}, y:FT_CHART_DEFAULTS.scales.y }}
+  );
+
+  /* ── Term×Product Heatmap ── */
+  const hm = DATA_P4.termProductHeatmap;
+  const hmBody = document.getElementById('heatmapBody');
+  const hmFoot = document.getElementById('heatmapFoot');
+  const colTotals = [0,0,0,0];
+  const maxVal = Math.max(...hm.data.flat());
+
+  hm.terms.forEach((term, i) => {
+    const rowTotal = hm.data[i].reduce((a,b)=>a+b,0);
+    hm.data[i].forEach((v,j) => { colTotals[j] += v; });
+    const cells = hm.data[i].map((v,j) => {
+      const intensity = Math.floor((v / maxVal) * 5);
+      return `<td class="heat-${intensity}">${v > 0 ? v.toLocaleString() : '—'}</td>`;
+    }).join('');
+    hmBody.innerHTML += `<tr><td style="font-weight:600;font-size:var(--text-xs);">${term}</td>${cells}<td class="num" style="font-weight:700;">${rowTotal.toLocaleString()}</td></tr>`;
+  });
+
+  const grandTotal = colTotals.reduce((a,b)=>a+b,0);
+  hmFoot.innerHTML = `<tr style="font-weight:700;background:var(--ft-paper-dark);">
+    <td>Column Total</td>
+    ${colTotals.map(v=>`<td class="num">${v.toLocaleString()}</td>`).join('')}
+    <td class="num">${grandTotal.toLocaleString()}</td>
+  </tr>`;
+
+  /* ── Concentration ── */
+  DATA_P4.concentration.rows.forEach(r => {
+    document.getElementById('concBody').innerHTML +=
+      `<tr><td style="font-size:var(--text-xs);">${r[0]}</td><td class="num">${r[1]}</td>
+       <td class="num">${r[2]}</td><td class="num">${r[3]}</td>
+       <td><span class="rag-pill ${r[4]}">${r[4].toUpperCase()}</span></td></tr>`;
+  });
+
+  /* ── Repeat Borrowers ── */
+  DATA_P4.repeatBorrowers.rows.forEach(r => {
+    document.getElementById('repeatBody').innerHTML +=
+      `<tr><td>${r[0]}</td><td class="num">${r[1]}</td><td class="num">${r[2]}</td>
+       <td class="num">${r[3]}</td><td class="num">${r[4]}</td>
+       <td class="num">${r[5]}</td><td class="num">${r[6]}</td></tr>`;
+  });
+  const rb = DATA_P4.repeatBorrowers.totals;
+  document.getElementById('repeatFoot').innerHTML =
+    `<tr style="font-weight:700;"><td>${rb[0]}</td><td class="num">${rb[1]}</td><td class="num">${rb[2]}</td>
+     <td class="num">${rb[3]}</td><td class="num">${rb[4]}</td>
+     <td class="num">${rb[5]}</td><td class="num">${rb[6]}</td></tr>`;
+  document.getElementById('repeatNote').textContent = DATA_P4.repeatBorrowers.note;
+
+  /* Repeat mini bar chart */
+  const rpCtx = document.getElementById('repeatChart').getContext('2d');
+  ftBarChart(rpCtx,
+    PRODUCTS.map(p => p.label),
+    [{ label:'Repeat %', data:[45.2,46.4,44.4,45.5], backgroundColor: PRODUCTS.map(p=>p.color), borderWidth:0 }],
+    { plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label: ctx => ` ${ctx.parsed.y}% repeat borrowers` } } },
+      scales:{ x:FT_CHART_DEFAULTS.scales.x, y:{ ...FT_CHART_DEFAULTS.scales.y, ticks:{ ...FT_CHART_DEFAULTS.scales.y.ticks, callback:v=>v+'%' }, suggestedMin:30, suggestedMax:55 } }
+    }
+  );
+
+  /* Narrative sync */
+  const ta = document.getElementById('narrative-p4');
+  const pp = document.getElementById('narrative-p4-print');
+  ta.addEventListener('input', () => { pp.textContent = ta.value; });
+});
+</script>
+</body>
+</html>

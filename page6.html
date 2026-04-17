@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
+-->
+<meta name="generator" content="Perplexity Computer">
+<meta name="author" content="Perplexity Computer">
+<meta property="og:see_also" content="https://www.perplexity.ai/computer">
+<link rel="author" href="https://www.perplexity.ai/computer">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operations &amp; Compliance — Credit Canary Board Pack Feb 2026</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="config.js"></script>
+</head>
+<body>
+<div class="pack-page">
+
+  <header class="masthead">
+    <div class="masthead-brand">
+      <div class="masthead-logo">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-label="Credit Canary">
+          <rect width="32" height="32" rx="3" fill="#1A1A1A"/>
+          <path d="M8 22 L16 8 L24 22" stroke="#FFF1E5" stroke-width="2" stroke-linejoin="round" fill="none"/>
+          <circle cx="16" cy="22" r="2.5" fill="#C08A20"/>
+          <path d="M12 18 L16 14 L20 18" stroke="#C08A20" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
+        </svg>
+        <div>
+          <div class="masthead-title">Credit Canary</div>
+          <div class="masthead-subtitle">Board Analytics Pack</div>
+        </div>
+      </div>
+    </div>
+    <div class="masthead-meta">
+      <div><strong>February 2026</strong> &nbsp;·&nbsp; As at 28 Feb 2026</div>
+      <div class="confidential-badge">Strictly Confidential</div>
+    </div>
+  </header>
+
+  <nav class="page-nav no-print">
+    <a href="index.html" class="nav-link">Contents</a>
+    <a href="page1.html" class="nav-link">1 · Executive Summary</a>
+    <a href="page2.html" class="nav-link">2 · Credit Risk</a>
+    <a href="page3.html" class="nav-link">3 · Origination</a>
+    <a href="page4.html" class="nav-link">4 · Portfolio</a>
+    <a href="page5.html" class="nav-link">5 · Income &amp; Capital</a>
+    <a href="page6.html" class="nav-link active">6 · Operations</a>
+  </nav>
+
+  <div class="page-header">
+    <div>
+      <div class="page-label">Section 6 — Compliance &amp; Operations</div>
+      <h1 class="page-title">Operations &amp; Compliance</h1>
+    </div>
+    <div class="page-badge">February 2026</div>
+  </div>
+
+  <!-- ─ Consumer Duty ─ -->
+  <div class="section-title">Consumer Duty Outcomes Monitoring (FCA PS22/9)</div>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Outcome Area</th><th>KPI</th><th>Target</th>
+        <th>Actual</th><th>Status</th><th style="min-width:200px;">Evidence / Actions</th>
+      </tr>
+    </thead>
+    <tbody id="cdBody"></tbody>
+  </table>
+
+  <hr class="divider">
+
+  <!-- ─ SLA + Complaints ─ -->
+  <div class="chart-row chart-row-2">
+    <div>
+      <div class="section-title">SLA Performance Dashboard</div>
+
+      <!-- SLA summary KPIs -->
+      <div class="kpi-strip" style="grid-template-columns:repeat(3,1fr);margin-bottom:var(--sp-4);">
+        <div class="kpi-item">
+          <div class="kpi-label">Overall SLA Adherence</div>
+          <div class="kpi-value">96.1%</div>
+          <div class="kpi-sub">6 of 7 processes ≥90%</div>
+        </div>
+        <div class="kpi-item">
+          <div class="kpi-label">Decision SLA</div>
+          <div class="kpi-value">96.2%</div>
+          <div class="kpi-sub">501/521 within 24 hrs</div>
+        </div>
+        <div class="kpi-item">
+          <div class="kpi-label">Complaint Resolution</div>
+          <div class="kpi-value">100%</div>
+          <div class="kpi-sub">All within 56-day limit</div>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Process</th><th>SLA Target</th><th class="num">Volume</th>
+            <th class="num">Within SLA</th><th class="num">SLA %</th>
+            <th>Avg Time</th><th>RAG</th>
+          </tr>
+        </thead>
+        <tbody id="slaBody"></tbody>
+      </table>
+    </div>
+
+    <div>
+      <div class="section-title">FCA DISP Complaints Register — February 2026</div>
+
+      <!-- Complaints summary -->
+      <div class="kpi-strip" style="grid-template-columns:repeat(2,1fr);margin-bottom:var(--sp-3);">
+        <div class="kpi-item">
+          <div class="kpi-label">Total Complaints</div>
+          <div class="kpi-value">7</div>
+          <div class="kpi-sub">0.18 per 1,000 accounts <span class="rag-pill green" style="margin-left:4px;">GREEN</span></div>
+        </div>
+        <div class="kpi-item">
+          <div class="kpi-label">Upheld + Partial</div>
+          <div class="kpi-value">2</div>
+          <div class="kpi-sub">Total redress: £120</div>
+        </div>
+      </div>
+
+      <table class="data-table" style="font-size:0.72rem;">
+        <thead>
+          <tr>
+            <th>Ref</th><th>Product</th><th>Category</th>
+            <th>Received</th><th>Status</th><th class="num">Days</th><th>Upheld</th>
+          </tr>
+        </thead>
+        <tbody id="complBody"></tbody>
+      </table>
+      <p class="text-xs text-muted mt-3" id="complNote"></p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ─ Collections ─ -->
+  <div class="section-title">Collections Performance</div>
+  <div class="chart-row chart-row-21">
+    <div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Stage</th><th class="num">Accounts</th><th class="num">Balance £000</th>
+            <th class="num">Promise-to-Pay</th><th class="num">Kept</th>
+            <th class="num">Collected £000</th><th class="num">Cure Rate</th>
+          </tr>
+        </thead>
+        <tbody id="collBody"></tbody>
+        <tfoot id="collFoot"></tfoot>
+      </table>
+      <p class="text-xs text-muted mt-3" id="collNote"></p>
+    </div>
+    <div>
+      <div class="chart-panel">
+        <div class="chart-panel-title">Cure Rate by Stage</div>
+        <div class="chart-canvas-wrap" style="height:190px;"><canvas id="collChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ─ NBA + Data Quality ─ -->
+  <div class="chart-row chart-row-2">
+    <div>
+      <div class="section-title">Next Best Action Effectiveness</div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>NBA Campaign</th><th class="num">Triggered</th>
+            <th class="num">Response Rate</th><th>Outcome</th><th class="num">Cost £</th>
+          </tr>
+        </thead>
+        <tbody id="nbaBody"></tbody>
+      </table>
+      <p class="text-xs text-muted mt-3" id="nbaNotes"></p>
+    </div>
+    <div>
+      <div class="section-title">Data Quality Scorecard</div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Metric</th><th class="num">Score</th>
+            <th class="num">Target</th><th>RAG</th><th style="min-width:120px;">Notes</th>
+          </tr>
+        </thead>
+        <tbody id="dqScoreBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ─ AI Narrative ─ -->
+  <div class="narrative-section">
+    <div class="narrative-header">
+      <div class="narrative-label">COO / Compliance Narrative — Operations &amp; Regulatory</div>
+      <button class="ai-generate-btn no-print"
+              data-narrative-btn="narrative-p6"
+              onclick="generateNarrative(DATA_P6.narrativePrompt, 'narrative-p6')">
+        ✦ Generate AI Narrative
+      </button>
+    </div>
+    <textarea id="narrative-p6" class="narrative-textarea"
+              placeholder="Click 'Generate AI Narrative' to produce a compliance and operations commentary, then edit before printing."></textarea>
+    <p class="narrative-print-p narrative-box" id="narrative-p6-print"></p>
+    <p class="narrative-hint no-print">Covers Consumer Duty outcomes, FCA complaints, SLA performance and collections. Edit before printing.</p>
+  </div>
+
+  <footer class="pack-footer">
+    <div>Credit Canary &mdash; Board Analytics Pack &middot; February 2026 &middot; Page 6 of 6</div>
+    <div class="footer-pplx"><a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a></div>
+    <div>Strictly Confidential</div>
+  </footer>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  /* ── Consumer Duty ── */
+  const cdBody = document.getElementById('cdBody');
+  DATA_P6.consumerDuty.rows.forEach(r => {
+    cdBody.innerHTML +=
+      `<tr>
+         <td style="font-weight:700;">${r[0]}</td>
+         <td style="font-size:var(--text-xs);">${r[1]}</td>
+         <td style="font-size:var(--text-xs);">${r[2]}</td>
+         <td class="num" style="font-weight:600;">${r[3]}</td>
+         <td><span class="rag-pill ${r[4]}">${r[4].toUpperCase()}</span></td>
+         <td style="font-size:var(--text-xs);color:var(--color-text-muted);">${r[5]}</td>
+       </tr>`;
+  });
+
+  /* ── SLA ── */
+  DATA_P6.slaPerformance.rows.forEach(r => {
+    document.getElementById('slaBody').innerHTML +=
+      `<tr>
+         <td>${r[0]}</td><td>${r[1]}</td><td class="num">${r[2]}</td>
+         <td class="num">${r[3]}</td><td class="num" style="font-weight:700;">${r[4]}</td>
+         <td>${r[5]}</td>
+         <td><span class="rag-pill ${r[6]}">${r[6].toUpperCase()}</span></td>
+       </tr>`;
+  });
+
+  /* ── Complaints ── */
+  DATA_P6.complaints.rows.forEach(r => {
+    const statusBadge = r[4] === 'Closed'
+      ? `<span class="rag-pill green">CLOSED</span>`
+      : `<span class="rag-pill amber">OPEN</span>`;
+    document.getElementById('complBody').innerHTML +=
+      `<tr>
+         <td style="font-family:monospace;font-size:0.7rem;">${r[0]}</td>
+         <td>${r[1]}</td>
+         <td style="font-size:var(--text-xs);">${r[2]}</td>
+         <td>${r[3]}</td>
+         <td>${statusBadge}</td>
+         <td class="num">${r[5]}</td>
+         <td style="font-size:var(--text-xs);">${r[6]}</td>
+       </tr>`;
+  });
+  document.getElementById('complNote').textContent = DATA_P6.complaints.note;
+
+  /* ── Collections ── */
+  DATA_P6.collections.rows.forEach(r => {
+    document.getElementById('collBody').innerHTML +=
+      `<tr>
+         <td>${r[0]}</td><td class="num">${r[1]}</td><td class="num">${r[2]}</td>
+         <td class="num">${r[3]}</td><td class="num">${r[4]}</td>
+         <td class="num">${r[5]}</td><td class="num">${r[6]}</td>
+       </tr>`;
+  });
+  const ct = DATA_P6.collections.totals;
+  document.getElementById('collFoot').innerHTML =
+    `<tr style="font-weight:700;">
+       <td>${ct[0]}</td><td class="num">${ct[1]}</td><td class="num">${ct[2]}</td>
+       <td class="num">${ct[3]}</td><td class="num">${ct[4]}</td>
+       <td class="num">${ct[5]}</td><td class="num">${ct[6]}</td>
+     </tr>`;
+  document.getElementById('collNote').textContent = DATA_P6.collections.note;
+
+  /* ── Collections Chart ── */
+  const collCtx = document.getElementById('collChart').getContext('2d');
+  ftBarChart(collCtx,
+    ['Early\nArrears','Mid\nArrears','Late\nArrears','Pre-Write-off'],
+    [
+      { label:'Promise-to-Pay %', data:[68.4,54.2,38.4,22.2], backgroundColor:'rgba(31,96,145,0.3)', borderColor:'#1F6091', borderWidth:1 },
+      { label:'Cure Rate %', data:[42.3,28.1,14.2,6.8], backgroundColor: ['#4A7C3F','#D8722A','#9A1B1B','#7B1818'], borderWidth:0 },
+    ],
+    { scales:{ x:FT_CHART_DEFAULTS.scales.x, y:{ ...FT_CHART_DEFAULTS.scales.y, ticks:{ ...FT_CHART_DEFAULTS.scales.y.ticks, callback:v=>v+'%' }, suggestedMax:80 } } }
+  );
+
+  /* ── NBA ── */
+  DATA_P6.nba.rows.forEach(r => {
+    document.getElementById('nbaBody').innerHTML +=
+      `<tr>
+         <td style="font-size:var(--text-xs);">${r[0]}</td>
+         <td class="num">${r[1]}</td>
+         <td class="num">${r[2]}</td>
+         <td style="font-size:var(--text-xs);">${r[3]}</td>
+         <td class="num">${r[4]}</td>
+       </tr>`;
+  });
+  document.getElementById('nbaNotes').textContent = DATA_P6.nba.note;
+
+  /* ── Data Quality ── */
+  DATA_P6.dataQuality.rows.forEach(r => {
+    document.getElementById('dqScoreBody').innerHTML +=
+      `<tr>
+         <td style="font-size:var(--text-xs);">${r[0]}</td>
+         <td class="num" style="font-weight:700;">${r[1]}</td>
+         <td class="num">${r[2]}</td>
+         <td><span class="rag-pill ${r[3]}">${r[3].toUpperCase()}</span></td>
+         <td style="font-size:var(--text-xs);color:var(--color-text-muted);">${r[4]}</td>
+       </tr>`;
+  });
+
+  /* Narrative sync */
+  const ta = document.getElementById('narrative-p6');
+  const pp = document.getElementById('narrative-p6-print');
+  ta.addEventListener('input', () => { pp.textContent = ta.value; });
+});
+</script>
+</body>
+</html>

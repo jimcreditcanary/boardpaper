@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
+-->
+<meta name="generator" content="Perplexity Computer">
+<meta name="author" content="Perplexity Computer">
+<meta property="og:see_also" content="https://www.perplexity.ai/computer">
+<link rel="author" href="https://www.perplexity.ai/computer">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Origination &amp; Underwriting — Credit Canary Board Pack Feb 2026</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="config.js"></script>
+</head>
+<body>
+<div class="pack-page">
+
+  <header class="masthead">
+    <div class="masthead-brand">
+      <div class="masthead-logo">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-label="Credit Canary">
+          <rect width="32" height="32" rx="3" fill="#1A1A1A"/>
+          <path d="M8 22 L16 8 L24 22" stroke="#FFF1E5" stroke-width="2" stroke-linejoin="round" fill="none"/>
+          <circle cx="16" cy="22" r="2.5" fill="#C08A20"/>
+          <path d="M12 18 L16 14 L20 18" stroke="#C08A20" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
+        </svg>
+        <div>
+          <div class="masthead-title">Credit Canary</div>
+          <div class="masthead-subtitle">Board Analytics Pack</div>
+        </div>
+      </div>
+    </div>
+    <div class="masthead-meta">
+      <div><strong>February 2026</strong> &nbsp;·&nbsp; As at 28 Feb 2026</div>
+      <div class="confidential-badge">Strictly Confidential</div>
+    </div>
+  </header>
+
+  <nav class="page-nav no-print">
+    <a href="index.html" class="nav-link">Contents</a>
+    <a href="page1.html" class="nav-link">1 · Executive Summary</a>
+    <a href="page2.html" class="nav-link">2 · Credit Risk</a>
+    <a href="page3.html" class="nav-link active">3 · Origination</a>
+    <a href="page4.html" class="nav-link">4 · Portfolio</a>
+    <a href="page5.html" class="nav-link">5 · Income &amp; Capital</a>
+    <a href="page6.html" class="nav-link">6 · Operations</a>
+  </nav>
+
+  <div class="page-header">
+    <div>
+      <div class="page-label">Section 3 — Growth</div>
+      <h1 class="page-title">Origination &amp; Underwriting</h1>
+    </div>
+    <div class="page-badge">February 2026</div>
+  </div>
+
+  <!-- ─ Funnel + Approval by Product ─ -->
+  <div class="chart-row chart-row-12">
+    <div>
+      <div class="section-title">Application Funnel — Feb 2026</div>
+      <div class="funnel-v2" id="funnelV2"></div>
+      <p class="text-xs text-muted mt-3" id="funnelNote"></p>
+    </div>
+    <div>
+      <div class="section-title">Approval Rate by Product</div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Product</th><th class="num">Apps</th><th class="num">Approved</th>
+            <th class="num">Declined</th><th class="num">Referred</th>
+            <th class="num">Approval %</th><th class="num">MoM Δ</th><th>RAG</th>
+          </tr>
+        </thead>
+        <tbody id="approvalProdBody"></tbody>
+        <tfoot id="approvalProdFoot"></tfoot>
+      </table>
+
+      <div class="section-title mt-5">Approval Rate by Credit Score Band</div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Score Band</th><th class="num">Apps</th><th class="num">Approved</th>
+            <th class="num">Approval %</th><th class="num">Avg Loan £</th>
+            <th class="num">Avg Rate %</th><th class="num">Default Rate*</th>
+          </tr>
+        </thead>
+        <tbody id="appBandBody"></tbody>
+      </table>
+      <p class="text-xs text-muted mt-3" id="bandNote"></p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ─ Data Collection ─ -->
+  <div class="chart-row chart-row-21">
+    <div>
+      <div class="section-title">Data Collection Methods — Applications &amp; Outcomes</div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Method</th><th class="num">Applications</th><th class="num">% Share</th>
+            <th class="num">Approval Rate</th><th class="num">Default Rate*</th>
+            <th class="num">Avg Processing</th>
+          </tr>
+        </thead>
+        <tbody id="dcBody"></tbody>
+      </table>
+      <p class="text-xs text-muted mt-3" id="dcNote"></p>
+
+      <!-- OB KPI strip -->
+      <div class="kpi-strip mt-4" style="grid-template-columns:repeat(3,1fr);">
+        <div class="kpi-item">
+          <div class="kpi-label">OB Adoption</div>
+          <div class="kpi-value">62.6%</div>
+          <div class="kpi-sub">+1.2pp MoM</div>
+        </div>
+        <div class="kpi-item">
+          <div class="kpi-label">OB Approval Rate</div>
+          <div class="kpi-value">68.4%</div>
+          <div class="kpi-sub">vs 48.2% bank stmt</div>
+        </div>
+        <div class="kpi-item">
+          <div class="kpi-label">OB Default Rate</div>
+          <div class="kpi-value">2.1%</div>
+          <div class="kpi-sub">vs 4.9% bank stmt</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="section-title">Open Banking Adoption Trend (%)</div>
+      <div class="chart-panel">
+        <div class="chart-canvas-wrap" style="height:160px;"><canvas id="obTrendChart"></canvas></div>
+      </div>
+
+      <div class="section-title mt-5">Time-to-Decision Trend (Hours)</div>
+      <div class="chart-panel">
+        <div class="chart-canvas-wrap" style="height:140px;"><canvas id="ttdChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ─ TU Billing + Decision Quality ─ -->
+  <div class="chart-row chart-row-2">
+    <div>
+      <div class="section-title">TransUnion Cost Breakdown — Feb 2026</div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Check Type</th><th class="num">Volume</th>
+            <th class="num">Unit Cost</th><th class="num">Total £</th><th class="num">% Spend</th>
+          </tr>
+        </thead>
+        <tbody id="tuBody"></tbody>
+        <tfoot id="tuFoot"></tfoot>
+      </table>
+      <p class="text-xs text-muted mt-3" id="tuNote"></p>
+    </div>
+    <div>
+      <div class="section-title">Decision Quality &amp; Accuracy</div>
+
+      <!-- KPI cards for auto-decision rate -->
+      <div class="echelon-grid" style="grid-template-columns:1fr 1fr;margin-bottom:var(--sp-4);">
+        <div class="echelon-card warning">
+          <div class="echelon-label">Auto-Decision Rate</div>
+          <div class="echelon-value">58.3%</div>
+          <div class="echelon-sub">+3.1pp MoM · Amber threshold 45%</div>
+        </div>
+        <div class="echelon-card success">
+          <div class="echelon-label">Blended Accuracy</div>
+          <div class="echelon-value">93.4%</div>
+          <div class="echelon-sub">Correct decisions / total decisioned</div>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Decision Type</th><th class="num">Count</th><th class="num">Correct</th>
+            <th class="num">Accuracy</th><th class="num">False+</th><th class="num">False−</th><th>RAG</th>
+          </tr>
+        </thead>
+        <tbody id="dqBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ─ AI Narrative ─ -->
+  <div class="narrative-section">
+    <div class="narrative-header">
+      <div class="narrative-label">Underwriting Narrative — Origination &amp; Decisions</div>
+      <button class="ai-generate-btn no-print"
+              data-narrative-btn="narrative-p3"
+              onclick="generateNarrative(DATA_P3.narrativePrompt, 'narrative-p3')">
+        ✦ Generate AI Narrative
+      </button>
+    </div>
+    <textarea id="narrative-p3" class="narrative-textarea"
+              placeholder="Click 'Generate AI Narrative' to produce an underwriting commentary, then edit before printing."></textarea>
+    <p class="narrative-print-p narrative-box" id="narrative-p3-print"></p>
+    <p class="narrative-hint no-print">Covers funnel conversion, Open Banking adoption, and decision quality. Edit before printing.</p>
+  </div>
+
+  <footer class="pack-footer">
+    <div>Credit Canary &mdash; Board Analytics Pack &middot; February 2026 &middot; Page 3 of 6</div>
+    <div class="footer-pplx"><a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a></div>
+    <div>Strictly Confidential</div>
+  </footer>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  /* ── Funnel ── */
+  const fv = document.getElementById('funnelV2');
+  DATA_P3.funnel.steps.forEach((s, i) => {
+    const width = Math.round(100 - (i * 7));
+    fv.innerHTML +=
+      `<div class="funnel-v2-step" style="width:${width}%;background:${s.color};">
+         <span class="funnel-v2-label">${s.label}</span>
+         <span class="funnel-v2-count">${s.value.toLocaleString()}</span>
+         <span class="funnel-v2-pct">${s.pct}</span>
+       </div>` + (i < DATA_P3.funnel.steps.length - 1 ?
+         `<div class="funnel-v2-drop">▼ ${DATA_P3.funnel.steps[i+1] ? (((s.value - DATA_P3.funnel.steps[i+1].value) / s.value * 100).toFixed(1) + '% fall-out') : ''}</div>` : '');
+  });
+  document.getElementById('funnelNote').textContent = DATA_P3.funnel.note;
+
+  /* ── Approval by Product ── */
+  DATA_P3.approvalByProduct.rows.forEach(r => {
+    document.getElementById('approvalProdBody').innerHTML +=
+      `<tr><td>${r[0]}</td><td class="num">${r[1]}</td><td class="num">${r[2]}</td>
+       <td class="num">${r[3]}</td><td class="num">${r[4]}</td><td class="num">${r[5]}</td>
+       <td class="num">${r[6]}</td><td><span class="rag-pill ${r[7]}">${r[7].toUpperCase()}</span></td></tr>`;
+  });
+  const at = DATA_P3.approvalByProduct.totals;
+  document.getElementById('approvalProdFoot').innerHTML =
+    `<tr style="font-weight:700;"><td>${at[0]}</td><td class="num">${at[1]}</td><td class="num">${at[2]}</td>
+     <td class="num">${at[3]}</td><td class="num">${at[4]}</td><td class="num">${at[5]}</td>
+     <td class="num">${at[6]}</td><td><span class="rag-pill ${at[7]}">${at[7].toUpperCase()}</span></td></tr>`;
+
+  /* ── Credit Band ── */
+  DATA_P3.approvalByCreditBand.rows.forEach(r => {
+    document.getElementById('appBandBody').innerHTML +=
+      `<tr><td>${r[0]}</td><td class="num">${r[1]}</td><td class="num">${r[2]}</td>
+       <td class="num">${r[3]}</td><td class="num">${r[4]}</td>
+       <td class="num">${r[5]}</td><td class="num">${r[6]}</td></tr>`;
+  });
+  document.getElementById('bandNote').textContent = DATA_P3.approvalByCreditBand.note;
+
+  /* ── Data Collection ── */
+  DATA_P3.dataCollection.rows.forEach(r => {
+    document.getElementById('dcBody').innerHTML +=
+      `<tr><td>${r[0]}</td><td class="num">${r[1]}</td><td class="num">${r[2]}</td>
+       <td class="num">${r[3]}</td><td class="num">${r[4]}</td><td class="num">${r[5]}</td></tr>`;
+  });
+  document.getElementById('dcNote').textContent = DATA_P3.dataCollection.note;
+
+  /* ── OB Trend ── */
+  const obCtx = document.getElementById('obTrendChart').getContext('2d');
+  new Chart(obCtx, {
+    type: 'line',
+    data: {
+      labels: DATA_P3.obTrend.labels,
+      datasets: [{
+        label: 'OB Adoption %', data: DATA_P3.obTrend.obPct,
+        borderColor: '#00757F', backgroundColor: 'rgba(0,117,127,0.1)', fill: true,
+        borderWidth: 2.5, pointRadius: 4, pointBackgroundColor: '#00757F', tension: 0.3,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { ...FT_CHART_DEFAULTS.plugins, legend: { display: false },
+        annotation: { annotations: {
+          line1: { type: 'line', yMin: 65, yMax: 65, borderColor: '#4A7C3F', borderWidth: 1, borderDash: [4,4],
+            label: { content: 'Green 65%', enabled: true, position: 'end', color: '#4A7C3F', font: { size: 10 } } }
+        }}
+      },
+      scales: { x: FT_CHART_DEFAULTS.scales.x, y: { ...FT_CHART_DEFAULTS.scales.y,
+        ticks: { ...FT_CHART_DEFAULTS.scales.y.ticks, callback: v => v + '%' },
+        suggestedMin: 44, suggestedMax: 70,
+      }}
+    }
+  });
+
+  /* ── TTD Trend ── */
+  const ttdCtx = document.getElementById('ttdChart').getContext('2d');
+  ftLineChart(ttdCtx,
+    DATA_P3.ttdTrend.labels,
+    [
+      { label: 'Auto (hrs)', data: DATA_P3.ttdTrend.auto, borderColor: '#4A7C3F', backgroundColor: 'transparent', borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#4A7C3F', tension: 0.3, yAxisID: 'y2' },
+      { label: 'Manual (hrs)', data: DATA_P3.ttdTrend.manual, borderColor: '#9A1B1B', backgroundColor: 'transparent', borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#9A1B1B', tension: 0.3, yAxisID: 'y' },
+    ],
+    { scales: {
+        x: FT_CHART_DEFAULTS.scales.x,
+        y:  { ...FT_CHART_DEFAULTS.scales.y, position: 'left', title: { display: true, text: 'Manual hrs', font: { size: 10 }, color: '#666258' } },
+        y2: { ...FT_CHART_DEFAULTS.scales.y, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Auto hrs', font: { size: 10 }, color: '#666258' } },
+      }
+    }
+  );
+
+  /* ── TU Billing ── */
+  DATA_P3.tuBilling.rows.forEach(r => {
+    document.getElementById('tuBody').innerHTML +=
+      `<tr><td>${r[0]}</td><td class="num">${r[1]}</td><td class="num">${r[2]}</td>
+       <td class="num">${r[3]}</td><td class="num">${r[4]}</td></tr>`;
+  });
+  const tu = DATA_P3.tuBilling.total;
+  document.getElementById('tuFoot').innerHTML =
+    `<tr style="font-weight:700;"><td>Total</td><td class="num">—</td><td class="num">—</td>
+     <td class="num">${tu.total}</td><td class="num">${tu.pct}</td></tr>`;
+  document.getElementById('tuNote').textContent = DATA_P3.tuBilling.note;
+
+  /* ── Decision Quality ── */
+  DATA_P3.decisionQuality.rows.forEach(r => {
+    document.getElementById('dqBody').innerHTML +=
+      `<tr><td>${r[0]}</td><td class="num">${r[1]}</td><td class="num">${r[2]}</td>
+       <td class="num">${r[3]}</td><td class="num">${r[4]}</td><td class="num">${r[5]}</td>
+       <td><span class="rag-pill ${r[6]}">${r[6].toUpperCase()}</span></td></tr>`;
+  });
+
+  /* Narrative sync */
+  const ta = document.getElementById('narrative-p3');
+  const pp = document.getElementById('narrative-p3-print');
+  ta.addEventListener('input', () => { pp.textContent = ta.value; });
+});
+</script>
+</body>
+</html>
